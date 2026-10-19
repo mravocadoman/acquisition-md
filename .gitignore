@@ -1,0 +1,4 @@
+decks/out2/
+decks/__pycache__/
+*.b64
+.env

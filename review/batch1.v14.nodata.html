@@ -1,0 +1,313 @@
+<title>Batch One</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column, a compact ledger at the top, then eight posts as they will appear, each with its facts list. */
+:root{
+  --paper:#f7f4ee; --ink:#161a20; --muted:#5b6370; --rule:#dcd6c9;
+  --navy:#0b2a4a; --navy-soft:#e6edf5; --amber:#b86e00; --amber-soft:#fbefd9; --green:#1f6b3a; --green-soft:#e2f0e6;
+  --post-bg:#ffffff;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#15181d; --ink:#ece8df; --muted:#a19a8d; --rule:#2c3138;
+  --navy:#9ec1e8; --navy-soft:#1b2a3d; --amber:#f0b35a; --amber-soft:#3a2a10; --green:#7fc79a; --green-soft:#17301f;
+  --post-bg:#1d2127; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#15181d; --ink:#ece8df; --muted:#a19a8d; --rule:#2c3138;
+  --navy:#9ec1e8; --navy-soft:#1b2a3d; --amber:#f0b35a; --amber-soft:#3a2a10; --green:#7fc79a; --green-soft:#17301f;
+  --post-bg:#1d2127; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;padding-inline:20px;padding-block:32px 80px}
+main{max-width:720px;margin:0 auto}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,42px);line-height:1.05;margin:0 0 10px;text-wrap:balance}
+.lede{font-size:17px;color:var(--muted);margin:0 0 24px;max-width:60ch}
+.lede strong{color:var(--ink)}
+.ledger{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);margin:0 0 36px;overflow-x:auto}
+.ledger table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px}
+.ledger th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 8px 8px;border-bottom:1px solid var(--rule)}
+.ledger td{padding:9px 8px;border-bottom:1px solid var(--rule);vertical-align:top;font-variant-numeric:tabular-nums}
+.ledger tr:last-child td{border-bottom:0}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 8px;border-radius:3px;white-space:nowrap}
+.auto{background:var(--green-soft);color:var(--green)}
+.photo{background:var(--amber-soft);color:var(--amber)}
+.fmt{background:var(--navy-soft);color:var(--navy)}
+h2.how{font-family:var(--display);font-weight:500;font-size:22px;margin:0 0 8px}
+.how-p{margin:0 0 36px;color:var(--muted);max-width:62ch}
+.how-p b{color:var(--ink);font-weight:600}
+article{margin:0 0 44px;padding-top:22px;border-top:1px solid var(--rule)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin:0 0 12px;font-size:12.5px;color:var(--muted)}
+.meta .day{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+article h3{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.15;margin:0 0 14px;text-wrap:balance}
+.post{background:var(--post-bg);border:1px solid var(--rule);border-radius:4px;padding:18px 20px;white-space:pre-wrap;font-size:14.5px;line-height:1.5;max-width:100%;min-width:0;overflow-wrap:anywhere}
+.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:14px 0 6px}
+.comment{background:var(--post-bg);border-left:3px solid var(--navy);padding:12px 16px;white-space:pre-wrap;font-size:14px;line-height:1.5;color:var(--ink)}
+.facts{margin:8px 0 0;padding-left:18px;font-size:13.5px;color:var(--muted)}
+.facts li{margin:3px 0}
+.words{font-variant-numeric:tabular-nums}
+footer{border-top:2px solid var(--ink);padding-top:16px;font-size:13.5px;color:var(--muted);max-width:62ch}
+footer b{color:var(--ink)}
+@media (max-width:480px){body{padding-inline:16px}.post{padding:14px 14px}}
+.gate{background:var(--amber-soft);color:var(--amber)}
+.slides{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;margin:0 0 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.slides img{width:150px;height:150px;flex:0 0 auto;border-radius:3px;border:1px solid var(--rule);scroll-snap-align:start;display:block}
+.slides img.last{outline:2px solid var(--amber);outline-offset:-2px}
+.slides-note{font-size:12px;color:var(--muted);margin:-6px 0 12px}
+.kits{border-top:1px solid var(--rule);margin:0 0 36px;overflow-x:auto}
+.kits table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+.kits th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 8px 8px;border-bottom:1px solid var(--rule)}
+.kits td{padding:9px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+.kits tr:last-child td{border-bottom:0}
+.kits code{font-size:12px;overflow-wrap:anywhere;color:var(--ink)}
+.kits .word{font-weight:700;color:var(--amber);letter-spacing:.04em}
+.changed{background:var(--navy-soft);border-left:3px solid var(--navy);padding:12px 16px;margin:0 0 28px;font-size:14px;color:var(--ink);max-width:62ch}
+@media (max-width:480px){body{padding-inline:16px}.post{padding:14px 14px}.slides img{width:120px;height:120px}}
+</style>
+<main>
+<h1>Batch One</h1>
+<p class="lede">Eight posts, <strong>Mon 19 to Fri 30 October</strong>, four a week. <strong>Six are lead magnets</strong> built on a kit that already exists, each with an impressive claim that is also true; two are opinion posts (the Ads Library, and ROAS is mostly product). Every post carries a data carousel drawn in code from its own numbers, <strong>navy, with the real logos of the tools it names on the cover</strong>, opening on a drawn visual hook. Read them once, swipe the slides. Reply <strong>go</strong>, or name the post and the change.</p>
+<div class="changed"><b>Navy, real logos, mostly lead magnets, 12 Oct.</b> Three things from today. <b>Every deck is navy</b>: the light theme stays in the generator but no post uses it, so the profile reads as one set. <b>The tool chips carry the real logos in their own colours</b>, bigger, on white pills: Claude, n8n, Notion, LinkedIn, Facebook, Instagram, Shopify, Stripe, Python, Meta, Postgres, each from the brand’s own published file, never drawn by hand (Zernio, Excel, matplotlib and Canva keep a pictogram until an official file turns up). <b>The batch is six kits and two opinion posts</b>, re-dated to 19 to 30 October: LEADS is back in on Tuesday 27 (tightened to 249 words, Jev 90), the $480 coach story is held for a later batch, and the two opinion posts close each week. Three date-bound lines were fixed for the new dates: the ADS post no longer says “last Monday” or “a week” (it says 29 September and “running since”, on the slide too), the CAROUSEL post’s “two themes” bullet became the real-logos bullet, and the ROAS comment now points at Tuesday’s LEADS post. All eight PDFs and covers are live and verified. Generator still 726 lines, so the CAROUSEL claim stands. Your side before Monday 19: pin the six kit links in Featured, confirm “I have not opened Ads Manager since”, and say go.</div>
+<div class="changed"><b>Official marks on the chips, 1 Oct.</b> The tool chips on the covers now carry each tool’s own mark where the brand publishes one for this kind of use (the Simple Icons collection, shapes unaltered, one colour, always next to the name): Claude, n8n, Notion, Facebook, Instagram, Shopify, Python, Meta, and for later batches Stripe, Telegram, Postgres, X, Threads, Gmail, Zapier. LinkedIn and Excel keep a generic pictogram because those brands have asked not to be redistributed that way, and matplotlib, Canva, Zernio, Printify and the generic Email / Lead form / PDF have no published mark in the set. The marks live in a small separate module (brand_icons.py + the path data), so the generator stays at 726 lines; the covers below are the redrawn ones.</div>
+<div class="changed"><b>Tightened, 1 Oct.</b> Three things you asked for this morning. <b>The posts are a quarter shorter</b> (2,432 words across the eight became 1,816; the longest is now 255, the shortest 204): same hooks, same mechanisms, same numbers the slides use, same ask, less connective tissue. <b>The decks use cyan and navy only</b>: the third blue that had crept into the light theme for kickers and big numbers is gone (display text is cyan, small chrome is navy). <b>Every card sits on one grid</b>: the kicker, the first element and the content start at the same height on every slide of every deck, nothing is centred per slide any more, the cap is 32 words a card (was 40), and lists are three or four items, not five. All eight decks were redrawn and all eight posts were re-scored by Jev at the new length: TEAM 97 · ADS 95 · CAROUSEL 93 · START 88 · REVIEW 87 · opinion 81 · ROAS 75 · story 74; none is held, and the length rule in the gate is now 150-250 words (stories under 260). The seven PDFs are rebuilt and verified; they go live through the new bridge-pull hosting step the moment the bridge page is shared (one click on your side), together with the cover JPEGs that were missing until now. Generator still 726 lines, so the CAROUSEL claim stands.</div>
+<div class="changed"><b>Design fix, 30 Sep late.</b> You were right about the light decks: the light theme had drifted to a cream background, and the new tool chips sat with the glyph jammed against the name and the row wedged between the art and the headline. The light theme is white again (navy ink, cool grey panels, same cyan), the chips have air around the glyph and above and below the row, and the font is unchanged (Helvetica in the PDF, its metric twin in these previews). All seven decks were rebuilt; the thumbnails below are the rebuilt ones. Generator still 726 lines, so the CAROUSEL claim stands. Also new: the Jev gate is armed (it now runs on the TypeSafe node with your n8n Gateway credits, no key needed) and every post here was pre-scored on the bench tonight; the score sits in the ledger and on each Notion row. None is held; the lowest are the story (71) and the numbers post (77), which score low on &#8220;save value&#8221; by design because they carry no kit.</div>
+<div class="changed"><b>Rebalanced, 30 Sep late.</b> Two changes after the review of the system. First, <b>Tue 13 Oct is now an opinion post</b> (&#8220;An empty Ads Library is not a gap in the market&#8221;, 217 words, a 7-slide deck, no kit, no keyword) instead of the LEADS kit post: six gated posts in two weeks would read as one template, an opinion post is where comments come from, and it keeps the LEADS kit fresh for Batch Two (its row is archived, not deleted). Second, the <b>first comment on every kit post now adds</b> &#8220;If you would rather not wait, it is pinned in the Featured section of my profile&#8221;, so nobody waits on your DMs; that needs the five kit links pinned in your LinkedIn Featured section before Monday 5 Oct, or say the word and I take the sentence out. Also new since the last version: the packager is stripped to the hand-written path (no model touches the text, no AI image is generated; Facebook and X mirrors go text-only until a cover image is hosted), every post gets a Jev rubric score before it goes to Zernio, and the Notion rows have Impressions / Reactions / Comments / Saves columns for you to fill after each post so the Sunday session writes from data.</div>
+<div class="changed"><b>Rewritten 29 Sep, late.</b> Version 1 was rejected as not interesting enough. This version leads with the systems: the marketing department, the AI media buyer, the carousel generator, the business built with Claude, the €0.38 post-mortem, the AI that marks AI. The ask is in the text and on the last slide. Nothing is approved and nothing posts until you say so.</div>
+<div class="ledger"><table><thead><tr><th>Date</th><th>Post</th><th>Format</th><th>Delivery</th><th>Words</th></tr></thead><tbody>
+<tr><td>Mon 19 Oct</td><td>My entire marketing department runs on Claude and n8n</td><td><span class="chip fmt">LEAD MAGNET · SYSTEM</span></td><td><span class="chip auto">carousel · schedules 10:00</span> <span class="chip gate">gate TEAM</span> <span class="chip fmt">Jev 97</span></td><td class="words">213</td></tr>
+<tr><td>Tue 20 Oct</td><td>I handed my Meta ads to Claude. Here are the seven rules it runs by</td><td><span class="chip fmt">LEAD MAGNET · ADS</span></td><td><span class="chip auto">carousel · schedules 10:30</span> <span class="chip gate">gate ADS</span> <span class="chip fmt">Jev 95</span></td><td class="words">238</td></tr>
+<tr><td>Thu 22 Oct</td><td>Every carousel on this profile is drawn by 726 lines of Python</td><td><span class="chip fmt">LEAD MAGNET · TOOL</span></td><td><span class="chip auto">carousel · schedules 10:30</span> <span class="chip gate">gate CAROUSEL</span> <span class="chip fmt">Jev 93</span></td><td class="words">227</td></tr>
+<tr><td>Fri 23 Oct</td><td>An empty Ads Library is not a gap in the market</td><td><span class="chip fmt">OPINION · RESEARCH</span></td><td><span class="chip auto">carousel · schedules 10:00</span> <span class="chip fmt">Jev 81</span></td><td class="words">217</td></tr>
+<tr><td>Mon 26 Oct</td><td>I started an ecommerce business with Claude. Six scheduled sessions now run it</td><td><span class="chip fmt">LEAD MAGNET · BUILD LOG</span></td><td><span class="chip auto">carousel · schedules 10:00</span> <span class="chip gate">gate START</span> <span class="chip fmt">Jev 88</span></td><td class="words">217</td></tr>
+<tr><td>Tue 27 Oct</td><td>€0.38 a lead. 2% of them bought. The whole post-mortem</td><td><span class="chip fmt">LEAD MAGNET · POST-MORTEM</span></td><td><span class="chip auto">carousel · schedules 10:30</span> <span class="chip gate">gate LEADS</span> <span class="chip fmt">Jev 90</span></td><td class="words">249</td></tr>
+<tr><td>Thu 29 Oct</td><td>I built an AI that marks another AI&#x27;s homework, and refunds the customer when it fails</td><td><span class="chip fmt">LEAD MAGNET · BUILD</span></td><td><span class="chip auto">carousel · schedules 10:30</span> <span class="chip gate">gate REVIEW</span> <span class="chip fmt">Jev 87</span></td><td class="words">255</td></tr>
+<tr><td>Fri 30 Oct</td><td>36x vs 13x</td><td><span class="chip fmt">OPINION · NUMBERS</span></td><td><span class="chip auto">carousel · schedules 10:00</span> <span class="chip fmt">Jev 75</span></td><td class="words">204</td></tr>
+</tbody></table></div>
+<h2 class="how">What happens when you say go</h2>
+<p class="how-p">All eight get ticked <b>Approved</b> in Notion. Each morning at 08:00 Riga the packager picks up that day's entry, scores it with Jev, and puts it into Zernio <b>scheduled for 10:00 or 10:30</b> as a LinkedIn document post, first comment included, Facebook mirrored with the cover image, X and Threads threaded three hours later. Every carousel is drawn in code from the real numbers, 1080×1080, navy, 7 or 8 slides, never more than 32 words on a slide, slide 1 a drawn hook with the tools' real logos underneath. Every number came from your own notes or from the live task prompts; the facts under each post are the ones a sharp commenter could check.</p>
+<h2 class="how">The six keywords, and the one job that stays yours</h2>
+<p class="how-p">Each lead-magnet post ends with <b>Comment KEYWORD and I will send it to you. Free, no email, no form.</b> The same ask sits on the last slide. No link appears in the text or the comments. Zernio can auto-reply to comments on Instagram and Facebook but not on LinkedIn, so when someone comments the word, <b>you reply to the comment or DM them the link below</b>, ideally inside the first hour. The first comment also says the kit is pinned in the <b>Featured section of your profile</b>, so nobody has to wait on you: <b>pin these six links there before Monday 19 Oct</b> (LinkedIn profile → Featured → Add a link), or say so and the sentence comes out. Every kit is a single hosted page.</p>
+<div class="kits"><table><thead><tr><th>Word</th><th>Post</th><th>What they get</th><th>Link to send</th></tr></thead><tbody>
+<tr><td class="word">TEAM</td><td>Mon 19 Oct</td><td>The marketing department: architecture, nine workflows, four code blocks, schema, what it replaced, where it breaks</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/marketing-department</code></td></tr>
+<tr><td class="word">ADS</td><td>Tue 20 Oct</td><td>The AI media buyer: seven rules with thresholds, the daily prompt, the truth-report prompt, the pre-spend check, the €0.38 lesson</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/ads</code></td></tr>
+<tr><td class="word">CAROUSEL</td><td>Thu 22 Oct</td><td>The generator (v2.5, 726 lines), 14 slide types, the brand-mark module and path data, the seven cover-art helpers, the 32-word audit, the specimen renderer, the build file for the kit decks</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/carousel-generator</code></td></tr>
+<tr><td class="word">START</td><td>Mon 26 Oct</td><td>All 25 iterations in order, the four about the model, the order-state machine, the duplicate-push guard, the template</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/25-iterations</code></td></tr>
+<tr><td class="word">LEADS</td><td>Tue 27 Oct</td><td>The post-mortem: the campaign structure behind the €0.38, where those people came from and why they did not buy, the event setup that fixes it, the small-market maths behind the 36x, the &quot;which of your metrics is lying to you&quot; diagnostic</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/cheap-leads-postmortem</code></td></tr>
+<tr><td class="word">REVIEW</td><td>Thu 29 Oct</td><td>The review layer: architecture, two-axis rubric, purchase-first flow, refund triggers, snapshot and signed links, trust checklist</td><td><code>https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/ai-review-layer</code></td></tr>
+</tbody></table></div>
+<article><div class="meta"><span class="day">Mon 19 Oct · 10:00</span><span class="chip fmt">LEAD MAGNET · SYSTEM</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:00</span><span class="chip gate">gate TEAM on slide 8</span></div><h3>My entire marketing department runs on Claude and n8n</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">I run my entire marketing department on Claude and n8n. Nine workflows, one human, ninety seconds a day. This post was published by it.
+
+What happens after I write a post:
+
+→ Notion holds the queue. One tick approves
+→ 08:00: n8n splits it into post, first comment, carousel and kit
+→ The carousel is drawn in code from the numbers in the post. No designer
+→ Zernio posts it at 10:00 Riga and mirrors it to Facebook
+→ Claude Haiku turns it into an X and Threads thread three hours later
+→ Two more workflows exist only to shout on Telegram when something breaks
+
+The one thing it is banned from doing: writing the post. Every version where the model wrote it was technically fine and completely forgettable. If a human wrote it, the model cannot change a character.
+
+What it costs: n8n, a Postgres, a scheduling API, tokens. A rounding error against one freelance invoice.
+
+What it does not do: think. It is a department that ships, not one that decides.
+
+The kit is called TEAM: all nine workflows node by node, the four code blocks that matter, the schema, the costs, where it breaks.
+
+Comment TEAM and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile. One web page, nothing to download.
+
+Build the error workflow first. A pipeline that quietly stopped three weeks ago is worse than no pipeline. Mine did exactly that in September.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>Nine n8n workflows in the kit&#x27;s architecture; seven live today, the monthly planner and the Latvian adapter are paused. The post says nine and the kit says nine</li><li>08:00 Riga packager, 10:00 / 10:30 Riga Zernio slots, first comment auto-posts, Facebook mirror, X + Threads thread by Claude Haiku three hours later: all in the live publisher workflow</li><li>The verbatim override is real code in the packager; the fallback machine writer was retired on 29 Sep</li><li>&#x27;This post was published by it&#x27; is true only if the post goes out through the pipeline. Do not paste it by hand</li></ul></article>
+<article><div class="meta"><span class="day">Tue 20 Oct · 10:30</span><span class="chip fmt">LEAD MAGNET · ADS</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:30</span><span class="chip gate">gate ADS on slide 8</span></div><h3>I handed my Meta ads to Claude. Here are the seven rules it runs by</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">On 29 September I handed a live Meta ads campaign to Claude. It changes budgets, pauses ads, launches tests and reports to me every morning. I have not opened Ads Manager since.
+
+$70 a day, for a print-on-demand ecommerce project I run. Small enough to survive a bad decision, real enough that bad decisions cost money.
+
+Seven rules, in a scheduled Claude session with data access:
+
+→ Judge on real shop orders, never Meta&#x27;s count. Meta over-reports 15 to 20% here. One August week: 68 claimed, 54 real
+→ No changes in learning. Then one every three days, 20% per step
+→ Pause at $40 with zero purchases, or $60 with a CPA over $30
+→ Four to eight ads live. Never pause the last good one
+→ Fatigue: one new test, one variable
+→ Kill switch: seven-day real CPA over $30 after $350. Cut the budget and tell me
+→ Verify every write. Log every run, with the reasoning
+
+Twelve years of buying ads went into those seven lines. The model does not need to be clever. It needs to be consistent, and I was never consistent at 7am.
+
+It has been running since. Numbers in two weeks, good or bad.
+
+The kit is called ADS: the seven rules with thresholds, the full daily prompt, the truth-report prompt, the pre-spend check.
+
+Comment ADS and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile.
+
+A few weeks is not a verdict. The rules are the interesting part, not the results yet. If it blows up, the post in two weeks will say so, with the log.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>Handed over Mon 29 Sep: a scheduled Claude session (10:22 Riga daily) manages one CBO campaign at $70/day via Windsor.ai reads and writes; a second session posts the true-ROAS line to Telegram at 09:00 UTC</li><li>Rules as listed are lifted from the live task prompt: real-order judgement, 15-20% Meta over-report, learning-phase freeze until 3 Oct, one change per 3 days max 20%, pause at $40/0 or $60/CPA&gt;$30, 4-8 ads, fatigue at freq&gt;2.5 or CTR -30%, kill at 7d CPA&gt;$30 after $350 or 0 sales x3 days, read-back verification, claude_ads_log</li><li>&#x27;I have not opened Ads Manager since&#x27; is a claim only Rihards can make. Delete the sentence if it is not true on 20 Oct</li><li>&#x27;Numbers in two weeks&#x27; commits the Sunday 25 Oct session to write that post for w/c 2 Nov; &#x27;It has been running since&#x27; needs the 10:22 daily manager to have run every day since 29 Sep (check its run history before approving)</li><li>Never name the store, the product, the franchise or the theme. &#x27;A print-on-demand ecommerce project&#x27; only</li></ul></article>
+<article><div class="meta"><span class="day">Thu 22 Oct · 10:30</span><span class="chip fmt">LEAD MAGNET · TOOL</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:30</span><span class="chip gate">gate CAROUSEL on slide 8</span></div><h3>Every carousel on this profile is drawn by 726 lines of Python</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">Every carousel on this profile is drawn by 726 lines of Python. No Canva, no designer, €0 per deck. Including the one attached to this post.
+
+Document posts get roughly three times the engagement of text posts on LinkedIn, and saves count for about five likes. An hour in Canva per post became a function call.
+
+How it works:
+
+→ The post is written first. Its numbers are the only numbers allowed on the slides
+→ One script draws 7 to 8 slides: a drawn hook on the cover, then bars, funnels, tables, flows
+→ Every line is measured before it is placed. Too long, the font shrinks. Overlap, or over 32 words on a slide, and it refuses to save
+→ The cover carries the real logos of the tools the post names, from the brands&#x27; published files
+→ The PDF is hosted and attached automatically. I never touch a file
+
+Image models are banned from drawing charts, because they invent proportions. Code cannot invent a proportion.
+
+What it does not do: make a boring number interesting.
+
+The kit is called CAROUSEL: the generator, the 14 slide types, both themes, the build file for the kit decks on this profile, and the check that stops a broken slide from shipping.
+
+Comment CAROUSEL and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile. A Python file and a web page, not a Canva template. Python and matplotlib, both free, ten minutes.
+
+The publishing system it plugs into is the TEAM kit from Monday.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>deck2.py is 726 lines (v2.5, 1 Oct, unchanged since: cyan + navy only, one grid HEAD / GRID on every card, MAX_WORDS 32, drawn cover hooks, tool chips under the art, no reader text under 30pt, a specimen renderer, footer wordmark rihardszeila.com); 14 slide types (cover, statement, bignum, stats, bullets, hbars, funnel, flow, grid, table, compare, gate, outro plus the chrome); two themes in the code, navy only on the profile since 12 Oct (cyan background rejected 30 Sep, a third blue 1 Oct); MAX_WORDS = 32 per slide; PDFs 9-20 KB with Helvetica core fonts; the cover marks come from brand_icons.py v2 (Simple Icons path data, Font Awesome Free for LinkedIn), never drawn by hand</li><li>Engagement references: document carousels ~6.6% vs text ~2% (SocialPilot, Sep 2026); saves ~5x a like (same source)</li><li>The layout audit is real: save() raises on out-of-bounds text, overlapping text, or more than 40 words on a slide</li><li>The hosting path is real: base64 in hosted_assets, served by the download function, attached by the publisher as a document</li></ul></article>
+<article><div class="meta"><span class="day">Fri 23 Oct · 10:00</span><span class="chip fmt">OPINION · RESEARCH</span><span class="chip auto">carousel · 7 slides · navy · schedules 10:00</span></div><h3>An empty Ads Library is not a gap in the market</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"></div><p class="slides-note">7 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip. No gate; it ends on the question.</p>
+<div class="post">An empty Meta Ads Library is not a gap in the market. Most of the time it is the market telling you no.
+
+Everyone teaches the opposite: no competitors means you got there first. I nearly believed it this year, with a lead-gen idea for mould removal in Latvia. On paper, fine: homeowners hate the problem, contractors pay for leads, lead gen is my job.
+
+Two checks. Free, twenty minutes, from a laptop:
+
+→ Ads Library: who is paying to reach these people, and for how long. An ad that has run for months is the only proof something converts
+→ Search volume: if people wanted it solved, they would be typing it
+
+Both came back close to zero. That is not two opportunities. That is demand and supply agreeing with each other. I did not start the business. I did buy a domain first, which is the wrong order.
+
+The limit: this test tells you whether demand is being served today, not whether it could be created. Every new category fails it. Use it for services and lead gen, not to talk yourself out of building something new.
+
+Nobody posts about the ideas they killed, because there is no screenshot at the end.
+
+What did you kill this year before it cost you anything?
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">The pair that is an opportunity: an empty Ads Library and real search volume. People want it solved and nobody is buying the demand. Rare, and worth a week of your time.
+
+The step I skipped: I never called a single remediation company. Three phone calls would have settled it properly.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>A mould-removal lead-generation idea for Latvia, this year; researched, not started (you confirm: the domain bought during the detour is the only thing that exists)</li><li>Meta Ads Library for the niche in Latvia showed close to no running ads; search volume for the problem was close to zero; the check took about twenty minutes</li><li>No client, no franchise, no business named; the print-on-demand project is not mentioned</li><li>Opinion post: the claim in line one is a position, stated as one, and the limit of the method is in the post itself</li></ul></article>
+<article><div class="meta"><span class="day">Mon 26 Oct · 10:00</span><span class="chip fmt">LEAD MAGNET · BUILD LOG</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:00</span><span class="chip gate">gate START on slide 8</span></div><h3>I started an ecommerce business with Claude. Six scheduled sessions now run it</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">I started an ecommerce business with Claude this year. Real customers, real shipping, one person. Today six scheduled Claude sessions run its operations while I sleep.
+
+A print-on-demand project where the product itself is AI-generated. The model worked within weeks. Everything since has been operations, and operations is what I handed over:
+
+→ 06:00 health check: order queues, funnel, refunds, before I wake
+→ 09:00 truth report: real ad spend against real orders
+→ 10:22 media buyer: the Meta campaign inside seven hard rules
+→ Daily refund reconciler, built to delete itself once the webhook proves it redundant
+→ Daily audit of the alert bot. It complains if the bot repeats itself
+→ Monday one-pager: this week against last
+
+Twenty-five documented iterations to get here. Four were about the AI. The other twenty-one: order states, revision loops, print quality, a duplicate-push lock, and a delivery promise moved from 24 hours to 48 once reality voted.
+
+In a one-person AI business, AI is the feature and operations is the product. Nobody demos an atomic lock.
+
+The kit is called START: all 25 iterations in order, which four touched the model, the order-state machine, the duplicate-push guard, the template for your own log.
+
+Comment START and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile. The business is not named here or in the kit, on purpose. The mechanics are the useful part.
+
+The embarrassing iteration: an early pass rewriting my own copy for IP safety, because version one leaned on terms I had no right to lean on. A should-have-thought-before-launch problem.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>Six scheduled Claude sessions are live for the store: daily health check 06:00 UTC, true-ROAS report 09:00 UTC, Meta daily manager 10:22 Riga, refund reconciler 05:30 UTC (with a self-retirement test), Telegram alert-noise audit 05:45 UTC, Monday one-pager 04:00 UTC Mondays</li><li>25 documented iterations, four about the model; order states, revision loops, duplicate-push atomic lock, print-side mirror and upscaling, 24h delivery revised to 48h</li><li>Never the name, niche, theme or franchise. Not in the text, not on a slide, not in the kit</li><li>&#x27;This year&#x27; is right: the project launched in 2026</li></ul></article>
+<article><div class="meta"><span class="day">Tue 27 Oct · 10:30</span><span class="chip fmt">LEAD MAGNET · POST-MORTEM</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:30</span><span class="chip gate">gate LEADS on slide 8</span></div><h3>€0.38 a lead. 2% of them bought. The whole post-mortem</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">€0.38 a lead. 2% of them bought. The campaign returned about 8x and it nearly taught me nothing.
+
+The setup: a webinar funnel for an Excel course. €1,175 in ad spend, 2,000+ email signups. Thirty-eight cents a signup is cheap enough to screenshot.
+
+The other half: roughly 2% bought the €250 course. Around 8x. A win, which is why I nearly filed it as &quot;cheap leads, good campaign&quot; and repeated the structure somewhere it would have bled money.
+
+What the two numbers actually say:
+
+→ Cost per lead is not a performance metric. It is a price
+→ You can push it down almost arbitrarily by finding people for whom saying yes costs nothing. The same people for whom it means nothing
+→ The algorithm was never told a purchase exists. It found lead-form completers, brilliantly, because that is all I asked for
+→ The fix costs you: optimise on the purchase, or the nearest event that takes effort. Cost per lead gets worse while cost per customer gets better
+
+The metric I run that campaign on today: cost per qualified conversation. Uglier, slower, impossible to screenshot.
+
+The kit is called LEADS: the campaign structure behind the €0.38, where those people came from and why they did not buy, the event setup that fixes it, the small-market maths behind my 36x, and a one-page &quot;which of your metrics is lying to you&quot; diagnostic.
+
+Comment LEADS and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile.
+
+The 8x is back-of-envelope: 2% of 2,000 is 40 buyers, times €250 is €10,000, on €1,175 of spend. Rounded down because not every signup was unique and not every buyer came through the ads. The point survives the rounding.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>Webinar funnel for an Excel course; €1,175 ad spend; 2,000+ email signups; about 2% bought the €250 course</li><li>~8x is 40 buyers x €250 = €10,000 on €1,175, rounded down because not every signup was unique and not every buyer came through the ads; the first comment shows the arithmetic</li><li>&#x27;The metric I run that campaign on today: cost per qualified conversation&#x27; is a claim only Rihards can make</li><li>The kit cheap-leads-postmortem is hosted; the deck leads-038 (navy, Lead form / Email / Excel pictograms) is hosted and md5-verified 12 Oct</li></ul></article>
+<article><div class="meta"><span class="day">Thu 29 Oct · 10:30</span><span class="chip fmt">LEAD MAGNET · BUILD</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:30</span><span class="chip gate">gate REVIEW on slide 8</span></div><h3>I built an AI that marks another AI&#x27;s homework, and refunds the customer when it fails</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img class="last" src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip; the amber-edged slide is the gate.</p>
+<div class="post">I built an AI that marks another AI&#x27;s homework. Three fails and it refunds the customer before anyone has to email me.
+
+The problem: the product is generated by a model, on a print-on-demand ecommerce project I run. Generated means non-deterministic. One time in however many, a paying customer gets something wrong and finds out before I do. Trust problems kill small stores.
+
+The architecture, in the order the money moves:
+
+→ Purchase first. The customer pays before any compute runs. It is why the unit economics work
+→ Generate several candidates. A second model scores each on two axes: likeness to what the customer uploaded, adherence to what they wrote
+→ Below 85% it regenerates, with its own critique fed back. Three failures and the order refunds itself
+→ A human still looks before anything ships. The model catches wrong; the human supplies taste
+→ Approvals are snapshots behind signed links that expire. What they approved is what prints
+→ An atomic lock means nothing prints twice
+
+The QA layer is the product. It just does not demo.
+
+What 85% is not: a promise. It means the render cleared a bar I would show a person. Disliking a correct result is a conversation, not a refund.
+
+The kit is called REVIEW: the scoring rubric, the purchase-first flow, the refund triggers, the signed-link design, and a trust checklist for any product that can fail in front of a customer.
+
+Comment REVIEW and I will send it to you. Free, no email, no form.
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">Sent by hand, give me an hour. If you would rather not wait, it is pinned in the Featured section of my profile. The business is not named, on purpose.
+
+If you sell anything a model generates, steal the first sentence of the kit: charge before compute, score before ship, refund before they ask.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>Purchase-first architecture, multi-candidate generation scored by a review model, automatic refund after three failed generations, immutable approval snapshots with HMAC-signed expiring links, duplicate-push atomic lock: all in the live product and in the ai-review-layer kit (30 KB)</li><li>Never name the store, product, theme or franchise. &#x27;A print-on-demand ecommerce project&#x27; only</li><li>Rubric in the kit: two axes, likeness (vs uploaded photos) and instruction adherence (vs written spec), threshold 85%, up to three attempts with the critique fed back, then auto-refund; human curation before customer approval. The post now matches</li></ul></article>
+<article><div class="meta"><span class="day">Fri 30 Oct · 10:00</span><span class="chip fmt">OPINION · NUMBERS</span><span class="chip auto">carousel · 8 slides · navy · schedules 10:00</span></div><h3>36x vs 13x</h3>
+<div class="slides"><img src="DATAURI" alt="Slide 1" loading="lazy"><img src="DATAURI" alt="Slide 2" loading="lazy"><img src="DATAURI" alt="Slide 3" loading="lazy"><img src="DATAURI" alt="Slide 4" loading="lazy"><img src="DATAURI" alt="Slide 5" loading="lazy"><img src="DATAURI" alt="Slide 6" loading="lazy"><img src="DATAURI" alt="Slide 7" loading="lazy"><img src="DATAURI" alt="Slide 8" loading="lazy"></div><p class="slides-note">8 slides, 1080×1080, navy, drawn from the numbers in the post. Swipe the strip. No gate; it ends on the question.</p>
+<div class="post">My best ROAS ever: 36x. My best campaign ever: 13x.
+
+Different campaigns. The gap between those two numbers is most of what I know about paid ads.
+
+The 36x: a €1,000 test for a small Latvian brand selling heavily discounted branded stock. It would have sold itself out of a cardboard box.
+
+The 13x: €75,000+ a month in spend, over €1M in revenue. Same media buyer, same platform, completely different job.
+
+The biggest account I have run spent €20,000+ a day. At that level:
+
+→ The easy buyers are gone by lunch. Every day
+→ Creative fatigue is a daily chore, not a monthly one
+→ Money moves on structure: how budget is spread, how fast you kill things, the first 48 hours
+
+On that account my best &quot;clever idea&quot; moved results by low single digits. Restructuring the budget moved them by double digits. I spent years believing the creative was the job.
+
+A 30x screenshot without the spend next to it is counting on you not asking.
+
+ROAS is mostly product, price, margin and spend level. Skill decides whether you capture what the product makes possible. It rarely decides the ceiling.
+
+Biggest daily budget you have run, and what broke first?
+
+- Rihards</div>
+<div class="label">First comment</div><div class="comment">I get asked about the 36x more than anything else I have run. Small market, an unusually good product, timing. Very little of it was skill.
+
+The campaign that taught me the most returned a fraction of that: €0.38 a lead, and I was proud of it for about a week. That one went out on Tuesday, the LEADS post.</div>
+<div class="label">Facts I am asserting</div><ul class="facts"><li>36x on a €1,000 test, small Latvian brand, discounted branded stock</li><li>13x at €75,000+ a month spend and €1M+ revenue</li><li>Biggest account: €20,000+ a day</li><li>On it, your best creative idea moved results low single digits; restructuring budget moved them double digits</li></ul></article>
+<footer><b>Held:</b> the $480 coach story (written, 239 words, needs your photo; it gives its slot to LEADS). <b>For Batch Two (2 to 13 Nov):</b> the ADS results post the Tue 20 Oct post promises, NATIVE (the prompt that refuses to translate, Latvian lens), the 4,837 cold emails post, FUNDING if you say the word on the LIAA format, and the first-sale story if you confirm its facts. <b>Not used:</b> the health-story claims (only you can sign those off) and the four August kit posts that sold systems that were switched off.</footer></main>
