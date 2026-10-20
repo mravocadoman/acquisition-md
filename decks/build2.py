@@ -8,7 +8,7 @@ import brand_icons  # official marks on the tool chips where a brand publishes o
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out2")
 os.makedirs(OUT, exist_ok=True)
-U = "https://yxdtomxgsqaguqjhutgq.supabase.co/functions/v1/download/"
+U = "https://rihardszeila.com/kits/"  # Supabase served kit HTML as text/plain; the kits live here since 14 Oct
 built = []
 
 def done(d):
@@ -41,7 +41,7 @@ d.bullets("Where it breaks", [
     "The silent failure is the real one. Alert first",
     "Automation buys punctuality, not reach"], kicker="learned the hard way")
 d.gate("TEAM", "Nine workflows node by node, the code blocks, the schema, the failure modes.",
-       U + "marketing-department", extra="Sent by hand.")
+       U + "marketing-department.html", extra="Sent by hand.")
 done(d)
 
 # ---------------------------------------------------------------- 2. ADS (navy)
@@ -69,7 +69,7 @@ d.statement("The model does not need to be clever. It needs to be consistent.", 
             sub="I was never consistent at 7am.")
 d.statement("It has been running since 29 September. Numbers in two weeks, good or bad.", kicker="the honest slide")
 d.gate("ADS", "Seven rules, the daily prompt, the truth report, the pre-spend check.",
-       U + "ads", extra="Sent by hand. Three numbers to change.")
+       U + "ads.html", extra="Sent by hand. Three numbers to change.")
 done(d)
 
 # ---------------------------------------------------------------- 3. 36x vs 13x (navy)
@@ -119,7 +119,7 @@ d.bullets("What it does not do", [
     "Beat a real photograph",
     "Run without Python. Free, ten minutes"], kicker="the honest slide")
 d.gate("CAROUSEL", "The generator, 14 slide types, both themes, the build file, the audit.",
-       U + "carousel-generator", extra="Sent by hand. Python, not Canva.")
+       U + "carousel-generator.html", extra="Sent by hand. Python, not Canva.")
 done(d)
 
 # ---------------------------------------------------------------- 5. START (navy)
@@ -147,7 +147,7 @@ d.statement("AI is the feature. Operations is the product.", kicker="the thesis"
 d.statement("One session is designed to delete itself once the webhook proves it redundant.", kicker="the honest slide",
             sub="The best automation knows when to stop.")
 d.gate("START", "All 25 iterations, which four touched the model, the order-state machine, the lock.",
-       U + "25-iterations", extra="Sent by hand.")
+       U + "25-iterations.html", extra="Sent by hand.")
 done(d)
 
 # ---------------------------------------------------------------- 6. LEADS (navy)
@@ -174,7 +174,7 @@ d.table("Which event to optimise on", ["Event", "Effort", "Use it?"], [
     ["Booked call", "a calendar slot", "Yes, usually best"]], kicker="from the kit", widths=(0.34, 0.32, 0.34))
 d.statement("Today I run it on cost per qualified conversation.", kicker="today", sub="Uglier. Slower. Impossible to screenshot.")
 d.gate("LEADS", "The €0.38 campaign, why they did not buy, the event setup that fixes it.",
-       U + "cheap-leads-postmortem", extra="Sent by hand.")
+       U + "cheap-leads-postmortem.html", extra="Sent by hand.")
 done(d)
 
 # ---------------------------------------------------------------- 7. REVIEW (navy)
@@ -201,7 +201,7 @@ d.bullets("What 85% is not", [
 d.stats([("3", "attempts before a refund", "each fed its own critique"),
          ("85%", "auto-pass threshold", "lower, no gate. Higher, no margin")], kicker="the two numbers")
 d.gate("REVIEW", "The rubric, purchase-first flow, refund triggers, signed links, a trust checklist.",
-       U + "ai-review-layer", extra="Charge first. Score. Refund before they ask.")
+       U + "ai-review-layer.html", extra="Charge first. Score. Refund before they ask.")
 done(d)
 
 print()

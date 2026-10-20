@@ -1,8 +1,8 @@
-team-department 17397 B md5 f26b35a28f6b0853568627e824874fbc lines 4
-ads-seven-rules 15498 B md5 36883591fec491d41ddb7ebbe28733a5 lines 3 (v6, 12 Oct evening)
+team-department 17359 B md5 0e8bc35a74b648f3f828c729b3b9ad27 lines 4 (20 Oct: kit URL now rihardszeila.com/kits)
+ads-seven-rules 15469 B md5 9af4bb12da12531a4918464909d1ad8c lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
 roas-36-13 8723 B md5 2658d501c53bddf5d8a7df2a23c618ff lines 2
-carousel-330-lines 14874 B md5 79da7cbcd31d3a9a2b8074ee80d3bd3b lines 3
-start-six-sessions 19846 B md5 f349dafa523bbd388aab9f024a2c323d lines 4
+carousel-330-lines 14842 B md5 960ff1e1c4a2b2f0e3ab40e0d5ab3e18 lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
+start-six-sessions 19813 B md5 f9437ae6ca4b96e4b95fdf404a294a2b lines 4 (20 Oct: kit URL now rihardszeila.com/kits)
 empty-ads-library 9709 B md5 57558d43b6e58a5fb1341f2a59ee506d lines 2
-leads-038 10783 B md5 6b83d08311ab83ebf75865be93bcf5b3 lines 3
-review-marks-homework 11458 B md5 33b6b54ae45678dc090b150e07796ba6 lines 3
+leads-038 10746 B md5 85206792426f2e2e32ab40ea5ec27baa lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
+review-marks-homework 11426 B md5 ca90062a783088a8e97421bac8a872cf lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
