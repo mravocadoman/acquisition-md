@@ -1,8 +1,8 @@
-team-department 17359 B md5 0e8bc35a74b648f3f828c729b3b9ad27 lines 4 (20 Oct: kit URL now rihardszeila.com/kits)
-ads-seven-rules 15469 B md5 9af4bb12da12531a4918464909d1ad8c lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
-roas-36-13 8723 B md5 2658d501c53bddf5d8a7df2a23c618ff lines 2
-carousel-330-lines 14842 B md5 960ff1e1c4a2b2f0e3ab40e0d5ab3e18 lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
-start-six-sessions 19813 B md5 f9437ae6ca4b96e4b95fdf404a294a2b lines 4 (20 Oct: kit URL now rihardszeila.com/kits)
-empty-ads-library 9709 B md5 57558d43b6e58a5fb1341f2a59ee506d lines 2
-leads-038 10746 B md5 85206792426f2e2e32ab40ea5ec27baa lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
-review-marks-homework 11426 B md5 ca90062a783088a8e97421bac8a872cf lines 3 (20 Oct: kit URL now rihardszeila.com/kits)
+team-department 64564 B md5 40ec7e6baf154620fca674ea05cbf970 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+ads-seven-rules 64498 B md5 ee8cf45cbe8bba96bc7c6cf6498195f6 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+roas-36-13 58040 B md5 5770a35703a62a1c1b284e6271516e60 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+carousel-330-lines 61644 B md5 506cac3472063ed348329352b08f3892 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+start-six-sessions 70141 B md5 c4055e30088c7f8eb951b8a1bcd56799 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+empty-ads-library 57467 B md5 b85cb7d6943c59b04eaad380ab2861c2 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+leads-038 61865 B md5 89b4126bbe99626aeb109a397a73d8a0 (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
+review-marks-homework 60125 B md5 d2c2cc343f9fa05e595afc5eb1aad20f (2 Nov: plain words, no URL on any slide, Arial embedded so € renders; hosted through the shell webhook, md5-verified)
