@@ -144,6 +144,17 @@
     const m = /\/([^/]+\.mp4)$/.exec(videoUrl || "");
     return m ? `videos/${m[1]}` : "";
   };
+  // A story or single image has no PDF: its first slide image is published with the page under covers/.
+  const slidePath = (url) => {
+    const m = /\/([^/]+\.(?:jpe?g|png))$/i.exec(url || "");
+    return m ? `covers/${m[1]}` : "";
+  };
+
+  // "MS · Wed 11 Nov · …": a Mārketinga Skola post, Latvian only, for its Facebook page and Instagram (merged
+  // into this calendar 3 Nov 2026). Its approval box is "Post Ready", never "Approved": the English 08:00
+  // packager takes the oldest Approved row with no FINAL POST as a failure and would stall on it every day.
+  const isMs = (name) => /^MS · /.test(name || "");
+  const approvalProp = (row) => (row.ms ? "Post Ready" : "Approved");
 
   const yes = (v) => v === "__YES__" || v === true;
   // `row` is a queue item (see toQueue).
@@ -169,7 +180,8 @@
         url: r.url,
         name: r.Name || "Untitled",
         date: r["date:Date:start"] || "",
-        approved: yes(r.Approved),
+        ms: isMs(r.Name),
+        approved: yes(isMs(r.Name) ? r["Post Ready"] : r.Approved),
         sent: yes(r["Content Generated"]),
         jev: typeof r["Jev score"] === "number" ? r["Jev score"] : null,
         jevNotes: r["Jev notes"] || "",
@@ -181,13 +193,14 @@
       .sort((a, b) => (a.date || "9").localeCompare(b.date || "9"));
     q.forEach((r) => {
       r.status = status(r, todayIso);
-      r.clash = q.filter((o) => o !== r && o.date && o.date === r.date).map((o) => shortName(o.name));
+      // Only posts for the same accounts clash: an English post and a Mārketinga Skola one share a day fine.
+      r.clash = q.filter((o) => o !== r && o.date && o.date === r.date && o.ms === r.ms).map((o) => shortName(o.name));
     });
     return q;
   }
 
   const api = { unescapeMd, escapeMd, parsePage, textUpdates, fold, linkedinFold, facebookFold, thread, fmtDate, weekday, renameForDate,
-    shortName, longName, slotFrom, keywordFrom, coverPath, videoPath, status, nextRun, toQueue };
+    shortName, longName, slotFrom, keywordFrom, coverPath, videoPath, slidePath, isMs, approvalProp, status, nextRun, toQueue };
   root.Desk = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);

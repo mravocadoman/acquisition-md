@@ -69,4 +69,17 @@ const car = D.parsePage(`=== LV CAROUSEL ===\n\n[https://x.test/lv/team-departme
 assert.equal(D.coverPath(car.carouselLv), "covers/team-department-lv-cover.jpg");
 assert.equal(car.slidesLv.length, 2);
 
+// A Mārketinga Skola row: Latvian only, approved through Post Ready, its story image published under covers/.
+const q = D.toQueue([
+  { url: "a", Name: "MS · Fri 6 Nov · Četras Zoles: ROAS 36,34 (STORY)", "date:Date:start": "2026-11-06", Approved: "__YES__", "Post Ready": "__NO__" },
+  { url: "b", Name: "B1 · Fri 6 Nov · Every carousel on my profile is drawn by code (CAROUSEL)", "date:Date:start": "2026-11-06", Approved: "__YES__" },
+], "2026-11-03");
+assert.equal(q[0].ms, true); assert.equal(q[0].approved, false);       // Approved means nothing on an MS row
+assert.equal(D.approvalProp(q[0]), "Post Ready"); assert.equal(D.approvalProp(q[1]), "Approved");
+assert.equal(D.shortName(q[0].name), "STORY");
+assert.deepEqual(q[0].clash, []); assert.deepEqual(q[1].clash, []);   // different accounts, same day: fine
+assert.equal(D.renameForDate(q[0].name, "2026-11-11"), "MS · Wed 11 Nov · Četras Zoles: ROAS 36,34 (STORY)");
+assert.equal(D.slidePath("https://x.test/lv/ms-2026-11-06-result-story-01.jpg"), "covers/ms-2026-11-06-result-story-01.jpg");
+assert.equal(D.slidePath("https://x.test/lv/ms-2026-11-05-ai-latvian-01.mp4"), "");
+
 console.log("core.test: ok");

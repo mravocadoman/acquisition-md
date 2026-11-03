@@ -145,6 +145,32 @@
   .editor .over { color: var(--bad); }
   .editor .pair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; }
 
+  /* Plan: every post by date, where dates change and neighbours swap (3 Nov 2026) */
+  .barbtn { border: 0; border-radius: 8px; padding: 6px 12px; background: var(--navy-soft); color: var(--on-navy); font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .barbtn[aria-pressed="true"] { background: var(--cyan); color: #002138; }
+  .plan { max-width: 860px; margin: 0 auto; display: grid; gap: 12px; }
+  .plan h2 { font: 800 22px/1.2 var(--display); margin: 0; }
+  .plan ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .prow { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+  .prow.clash { border-color: var(--bad); }
+  .prow .arrows { display: grid; grid-auto-flow: column; gap: 4px; }
+  .prow .arrows button { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; width: 32px; height: 32px; font-size: 14px; }
+  .prow input[type="date"] { font: inherit; font-size: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--bg); color: var(--ink); }
+  .prow .what { min-width: 0; display: grid; gap: 2px; }
+  .prow .what b { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prow .what small { color: var(--muted); font-size: 12px; }
+  .prow .warn { color: var(--warn); }
+  .tag { display: inline-block; border-radius: 6px; padding: 1px 6px; font-size: 11px; font-weight: 700; background: var(--wait-bg); color: var(--muted); margin-right: 4px; }
+  .tag.lv { background: #fff3c4; color: #6b4d00; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tag.lv { background: #3d330c; color: #ffd76a; } }
+  :root[data-theme="dark"] .tag.lv { background: #3d330c; color: #ffd76a; }
+  @media (max-width: 720px) {
+    .prow { grid-template-columns: auto minmax(0, 1fr); }
+    .prow .arrows { grid-row: span 2; grid-auto-flow: row; }
+    .prow .open { justify-self: start; }
+  }
+  .ig .pmedia { border-radius: 0; margin: 0 -14px; }
+
   .dock { display: none; }
   .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--navy); color: var(--on-navy); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 20; box-shadow: 0 6px 24px rgba(0,0,0,.25); max-width: calc(100% - 32px); }
 
@@ -173,6 +199,7 @@
     <span class="brand">Post <span>Desk</span></span>
     <nav class="chips" id="chips" aria-label="Posts in the queue"></nav>
     <span class="count" id="count"></span>
+    <button type="button" class="barbtn" id="plan-toggle" aria-pressed="false">Plan</button>
   </div>
 </header>
 
@@ -180,6 +207,12 @@
   <section class="state" id="state">
     <h2>Loading your calendar from Notion</h2>
     <p>The queue, the copy and the slides for every post that hasn't gone out yet.</p>
+  </section>
+
+  <section class="plan" id="plan" hidden>
+    <h2>Plan</h2>
+    <p class="hint">Every post that hasn't gone out, by date. Change a date, or use ↑ ↓ to swap a post's day with its neighbour. The name follows the date, and an approval stays.</p>
+    <ol id="plan-list"></ol>
   </section>
 
   <section class="desk" id="desk" hidden>
@@ -197,6 +230,7 @@
           <button type="button" data-p="facebook">Facebook</button>
           <button type="button" data-p="x">X</button>
           <button type="button" data-p="threads">Threads</button>
+          <button type="button" data-p="instagram">Instagram</button>
         </div>
         <div class="seg" id="langs" role="group" aria-label="Language">
           <button type="button" data-l="en">EN</button>
@@ -268,7 +302,9 @@
   };
 
   // edit: the open editor, { url, lang, post, comment }, or null.
-  const S = { mcp: null, rows: [], queue: [], url: null, pages: {}, platform: store.get("desk.platform") || "linkedin", lang: "en", expanded: false, busy: false, loaded: false, edit: null };
+  const S = { mcp: null, rows: [], queue: [], url: null, pages: {}, platform: store.get("desk.platform") || "linkedin", lang: "en", expanded: false, busy: false, loaded: false, edit: null, view: "desk" };
+  // English goes to Rihards's own accounts, Latvian to the Mārketinga Skola page and Instagram.
+  const PLATFORMS = { en: ["linkedin", "facebook", "x", "threads"], lv: ["facebook", "instagram"] };
 
   function rigaNow() {
     const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Riga", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" })
@@ -302,7 +338,7 @@
 
   // ---- page-level states -------------------------------------------------
   function showState(title, text, button) {
-    $("desk").hidden = true; $("dock").hidden = true;
+    $("desk").hidden = true; $("dock").hidden = true; $("plan").hidden = true;
     const s = $("state"); s.hidden = false; s.replaceChildren(el("h2", { text: title }), el("p", { text }));
     if (button) s.append(el("button", { class: "primary", type: "button", onclick: button.run, text: button.label }));
   }
@@ -347,7 +383,7 @@
     }
     if (!cur()) S.url = firstToReview();
     $("feed-hint").textContent = "";
-    render(true);
+    if (S.view === "plan") renderPlan(); else render(true);
   }
 
   function rebuild() { S.queue = D.toQueue(S.rows, today()); }
@@ -399,23 +435,36 @@
     tool_error: "Notion refused the change. Open the row in Notion to check it.",
   };
 
-  async function write(properties, done) {
-    const r = cur();
-    if (!r || S.busy) return;
-    S.busy = true; renderActions();
+  // Resolves true when Notion confirmed. `r` defaults to the post on screen; the plan passes its own rows.
+  async function write(properties, done, r = cur(), keepBusy) {
+    if (!r || (S.busy && !keepBusy)) return false;
+    S.busy = true; renderActions(); if (S.view === "plan") renderPlan();
+    let ok = false;
     try {
       await S.mcp.callTool(NOTION, "notion-update-page", { page_id: r.url, command: "update_properties", properties }, { cache: false });
       Object.assign(r.raw, properties);
       rebuild();
-      done(r);
+      ok = true;
+      if (done) done(r);
     } catch (e) {
       toast(WRITE_FIX[e && e.code] || "Notion didn't confirm the change. Reloading the calendar to see what was saved.");
     } finally {
-      S.busy = false;
-      S.mcp.invalidate(NOTION, "notion-query-data-sources").catch(() => {});
-      render();
+      if (!keepBusy) {
+        S.busy = false;
+        S.mcp.invalidate(NOTION, "notion-query-data-sources").catch(() => {});
+        if (S.view === "plan") renderPlan(); else render();
+      }
     }
+    return ok;
   }
+
+  // A new date, and the "B1 · Thu 29 Oct ·" part of the name with it.
+  const dateProps = (r, iso) => {
+    const props = { "date:Date:start": iso, "date:Date:is_datetime": 0 };
+    const renamed = D.renameForDate(r.name, iso);
+    if (renamed !== r.name) props.Name = renamed;
+    return props;
+  };
 
   // ---- editing the copy ------------------------------------------------------
   // The editor writes the Notion row's own sections (FINAL POST / FIRST COMMENT, or their LV twins) with a
@@ -494,10 +543,15 @@
 
   function approve(yes) {
     if (S.edit) { toast("Save or cancel your edit first, then approve."); return; }
-    write({ Approved: yes ? "__YES__" : "__NO__" }, (r) => {
+    const r0 = cur();
+    if (!r0) return;
+    write({ [D.approvalProp(r0)]: yes ? "__YES__" : "__NO__" }, (r) => {
       if (!yes) { toast(`Approval taken back. ${D.shortName(r.name)} won't go out.`); return; }
-      const when = r.date < today() ? `at the next run, ${D.fmtDate(D.nextRun(rigaNow()))}` : `on ${D.fmtDate(r.date)}`;
-      toast(`Approved. ${D.shortName(r.name)} goes out ${when}.`);
+      if (r.ms) toast(`Approved for ${D.fmtDate(r.date)}. Mārketinga Skola posts go out by hand until the Latvian publisher exists.`);
+      else {
+        const when = r.date < today() ? `at the next run, ${D.fmtDate(D.nextRun(rigaNow()))}` : `on ${D.fmtDate(r.date)}`;
+        toast(`Approved. ${D.shortName(r.name)} goes out ${when}.`);
+      }
       const next = nextToReview(r.url);
       if (next !== r.url) setTimeout(() => go(next), 900);
     });
@@ -507,10 +561,64 @@
     const r = cur();
     const iso = $("move-date").value;
     if (!r || !iso || iso === r.date) return;
-    const props = { "date:Date:start": iso, "date:Date:is_datetime": 0 };
-    const renamed = D.renameForDate(r.name, iso);
-    if (renamed !== r.name) props.Name = renamed;
-    write(props, (row) => toast(`${D.shortName(row.name)} moved to ${D.fmtDate(iso)}.`));
+    write(dateProps(r, iso), (row) => toast(`${D.shortName(row.name)} moved to ${D.fmtDate(iso)}.`));
+  }
+
+  // ---- the plan: dates and order ---------------------------------------------
+  const byUrl = (url) => S.queue.find((x) => x.url === url);
+
+  function setDate(url, iso) {
+    const r = byUrl(url);
+    if (!r || !iso || iso === r.date) return;
+    write(dateProps(r, iso), (row) => toast(`${D.shortName(row.name)} moved to ${D.fmtDate(iso)}.`), r);
+  }
+
+  // Two posts trade days: one write each, the second only once Notion confirmed the first.
+  async function swapDates(urlA, urlB) {
+    const a = byUrl(urlA), b = byUrl(urlB);
+    if (!a || !b || S.busy || a.date === b.date) return;
+    const da = a.date, db = b.date;
+    const ok = await write(dateProps(a, db), null, a, true);
+    const b2 = ok && byUrl(urlB);
+    if (b2) await write(dateProps(b2, da), null, b2, true);
+    S.busy = false;
+    S.mcp.invalidate(NOTION, "notion-query-data-sources").catch(() => {});
+    if (b2) toast(`${D.shortName(byUrl(urlA).name)} is now ${D.fmtDate(db)}, ${D.shortName(byUrl(urlB).name)} ${D.fmtDate(da)}.`);
+    renderPlan();
+  }
+
+  function renderPlan() {
+    $("state").hidden = true; $("desk").hidden = true; $("dock").hidden = true; $("plan").hidden = false;
+    renderChips();
+    const q = S.queue;
+    $("plan-list").replaceChildren(...q.map((r, i) => {
+      const prev = q[i - 1], next = q[i + 1];
+      const sunday = r.date && D.weekday(r.date) === 0;
+      const langs = r.ms ? [el("span", { class: "tag lv", text: "MS · LV only" })]
+        : [el("span", { class: "tag", text: "EN" }), el("span", { class: "tag lv", text: "+ LV" })];
+      return el("li", { class: "prow" + (r.clash.length ? " clash" : "") },
+        el("div", { class: "arrows" },
+          el("button", { type: "button", title: "Swap with the post above", "aria-label": "Earlier", text: "↑", disabled: S.busy || !prev || prev.date === r.date,
+            onclick: () => swapDates(r.url, prev.url) }),
+          el("button", { type: "button", title: "Swap with the post below", "aria-label": "Later", text: "↓", disabled: S.busy || !next || next.date === r.date,
+            onclick: () => swapDates(r.url, next.url) })),
+        el("input", { type: "date", value: r.date || "", "aria-label": `Date for ${D.shortName(r.name)}`, disabled: S.busy, onchange: (e) => setDate(r.url, e.target.value) }),
+        el("div", { class: "what" },
+          el("b", { text: D.longName(r.name) }),
+          el("small", {}, ...langs, el("span", { class: "dot " + r.status, style: "display:inline-block;margin:0 4px 0 2px" }), STATUS_TEXT[r.status] || r.status,
+            r.clash.length ? el("span", { class: "warn", text: ` · same day as ${r.clash.join(", ")}` }) : null,
+            sunday ? el("span", { class: "warn", text: " · Sunday, nothing runs" }) : null)),
+        el("button", { type: "button", class: "secondary open", text: "Open", onclick: () => { showView("desk"); go(r.url); } }));
+    }));
+  }
+
+  function showView(v) {
+    if (v !== "desk" && !leaveEdit()) return;
+    S.view = v;
+    $("plan-toggle").setAttribute("aria-pressed", v === "plan" ? "true" : "false");
+    $("plan").hidden = v !== "plan";
+    if (!S.queue.length) return;
+    if (v === "plan") renderPlan(); else render(true);
   }
 
   // ---- rendering -----------------------------------------------------------
@@ -528,7 +636,7 @@
     $("chips").replaceChildren(...S.queue.map((r) =>
       el("button", { type: "button", class: "chip" + (r.clash.length ? " clash" : ""), "data-url": r.url, "aria-current": r.url === S.url ? "true" : "false",
         title: `${D.fmtDate(r.date)} · ${D.longName(r.name)} · ${r.status}`, onclick: () => go(r.url) },
-        el("span", { class: "dot " + r.status }), `${D.fmtDate(r.date)} · ${D.shortName(r.name)}`)));
+        el("span", { class: "dot " + r.status }), `${D.fmtDate(r.date)} · ${r.ms ? "MS " : ""}${D.shortName(r.name)}`)));
   }
 
   const BAND = (n) => (n >= 80 ? "strong" : n >= 60 ? "good" : n >= 45 ? "weak" : "poor");
@@ -537,7 +645,10 @@
   function render(enter) {
     const r = cur();
     if (!r) return;
-    $("state").hidden = true; $("desk").hidden = false; $("dock").hidden = false;
+    if (S.view === "plan") { renderPlan(); return; }
+    $("state").hidden = true; $("plan").hidden = true; $("desk").hidden = false; $("dock").hidden = false;
+    if (r.ms && S.lang !== "lv") S.lang = "lv";   // a Mārketinga Skola post has no English
+    if (!PLATFORMS[S.lang].includes(S.platform)) S.platform = PLATFORMS[S.lang][0];
     const desk = $("desk");
     if (enter) { desk.classList.remove("enter"); void desk.offsetWidth; desk.classList.add("enter"); }
     renderChips();
@@ -553,7 +664,8 @@
     const slot = D.slotFrom(r.notes);
     const kw = pg && D.keywordFrom(S.lang === "lv" ? pg.postLv : pg.post);
     const facts = [
-      ["Goes out", r.date ? `${D.fmtDate(r.date)}${slot ? ", " + slot : ""}` : "No date set"],
+      ["Goes out", r.date ? `${D.fmtDate(r.date)}${slot && !r.ms ? ", " + slot : ""}` : "No date set"],
+      ["Goes to", S.lang === "lv" ? "Mārketinga Skola: Facebook page, Instagram" : "Your LinkedIn, then X and Threads"],
       ["Jev", r.jev != null ? el("span", {}, el("span", { class: "num", text: String(r.jev) }), ` · ${BAND(r.jev)}`) : "Not scored yet"],
       kw ? ["Keyword", kw] : null,
       ["Type", r.dayType === "Lead Magnet" ? "Lead magnet post" : r.dayType === "Free Value" ? "Opinion / free value" : r.dayType || "Post"],
@@ -566,7 +678,8 @@
     if (r.status === "missed") alerts.push(["warn", `This date has passed. Approve it now and it goes out at the next run, ${D.fmtDate(D.nextRun(now))} morning. Or move it to a new day first.`]);
     if (r.clash.length) alerts.push(["bad", `${D.fmtDate(r.date)} also has ${r.clash.join(" and ")}. If both are approved, both go out that morning.`]);
     if (r.date && D.weekday(r.date) === 0) alerts.push(["warn", "Nothing runs on Sundays, so this won't go out. Move it to another day."]);
-    if (r.status === "approved" && r.date >= now.iso) alerts.push(["ok", `The 08:00 run on ${D.fmtDate(r.date)} checks it with Jev and hands it to Zernio.`]);
+    if (r.ms) alerts.push(["warn", "Mārketinga Skola post, Latvian only. There is no Latvian publisher yet, so on its day it goes out by hand: the slides and text are below."]);
+    else if (r.status === "approved" && r.date >= now.iso) alerts.push(["ok", `The 08:00 run on ${D.fmtDate(r.date)} checks it with Jev and hands it to Zernio.`]);
     if (page && page.error) alerts.push(["bad", "Couldn't load this post's text from Notion. Open it in Notion to read it."]);
     $("alerts").replaceChildren(...alerts.map(([k, t]) => el("div", { class: "alert " + k, text: t })));
 
@@ -597,19 +710,22 @@
   function creative(pg) {
     if (!pg) return null;
     if (S.lang === "lv" && (pg.carouselLv || pg.videoLv)) return { carousel: pg.carouselLv, video: pg.videoLv, lv: true, slides: pg.slidesLv };
+    // A story or single image: no PDF, no video, just its first slide image.
+    const img = S.lang === "lv" && pg.slidesLv.find((u) => D.slidePath(u));
+    if (img) return { carousel: "", video: "", image: img, lv: true, slides: pg.slidesLv };
     return { carousel: pg.carousel, video: pg.video, lv: false, slides: [] };
   }
 
   function mediaNode(pg, compact) {
     pg = creative(pg);
     if (!pg) return null;
-    const v = D.videoPath(pg.video), c = D.coverPath(pg.carousel);
+    const v = D.videoPath(pg.video), c = D.coverPath(pg.carousel) || D.slidePath(pg.image);
     if (v) return el("video", { src: v, controls: true, playsinline: true, muted: true, preload: "metadata", poster: c || null, onerror: (e) => e.target.replaceWith(fallback(pg)) });
-    if (c) return el("img", { src: c, alt: `First slide of the carousel`, loading: compact ? "lazy" : null, onerror: (e) => e.target.replaceWith(fallback(pg)) });
+    if (c) return el("img", { src: c, alt: pg.image ? "The story image" : "First slide of the carousel", loading: compact ? "lazy" : null, onerror: (e) => e.target.replaceWith(fallback(pg)) });
     return null;
   }
   function fallback(pg) {
-    const href = pg.video || pg.carousel;
+    const href = pg.video || pg.carousel || pg.image;
     return el("div", { class: "fallback" }, el("b", { text: "No preview stored with this page" }),
       href ? el("a", { href, target: "_blank", rel: "noopener", text: "Open the file ↗" }) : "This post has no carousel or video.");
   }
@@ -620,7 +736,7 @@
     const pg = creative(page);
         fig.replaceChildren(node || el("div", { class: "fallback" }, el("b", { text: pg ? "No carousel or video" : "Loading…" }), pg ? "This one goes out as text only." : ""));
     const lv = pg && pg.lv ? "Latvian " : "";
-    $("media-label").textContent = pg && pg.video ? `${lv}video · goes out instead of the slides` : pg && pg.carousel ? `${lv}carousel · slide 1` : "Creative";
+    $("media-label").textContent = pg && pg.video ? `${lv}video · goes out instead of the slides` : pg && pg.carousel ? `${lv}carousel · slide 1` : pg && pg.image ? `${lv}story` : "Creative";
     if (pg && S.lang === "lv" && !pg.lv && (pg.video || pg.carousel)) $("media-label").textContent += " · English, no Latvian version yet";
     const links = [];
     if (pg && pg.carousel) links.push(el("a", { href: pg.carousel, target: "_blank", rel: "noopener", text: "All slides (PDF) ↗" }));
@@ -629,9 +745,12 @@
     $("media-links").replaceChildren(...links);
   }
 
+  // The account the post appears under: Rihards in English, the Mārketinga Skola page in Latvian.
+  const author = () => (S.lang === "lv" ? { name: "Mārketinga Skola", mark: "MS" } : { name: "Rihards Zeila", mark: "RZ" });
   function who(r, slot) {
-    return el("div", { class: "who" }, el("span", { class: "avatar", text: "RZ" }),
-      el("div", {}, el("b", { text: "Rihards Zeila" }), el("small", { text: `${D.fmtDate(r.date)}${slot ? " · " + slot : ""}` })));
+    const a = author();
+    return el("div", { class: "who" }, el("span", { class: "avatar", text: a.mark }),
+      el("div", {}, el("b", { text: a.name }), el("small", { text: `${D.fmtDate(r.date)}${slot && S.lang === "en" ? " · " + slot : ""}` })));
   }
 
   function foldedText(text, f, moreLabel) {
@@ -642,8 +761,14 @@
   }
 
   function renderPreview(r, pg, page) {
-    for (const b of $("platforms").children) b.setAttribute("aria-pressed", b.dataset.p === S.platform ? "true" : "false");
-    for (const b of $("langs").children) b.setAttribute("aria-pressed", b.dataset.l === S.lang ? "true" : "false");
+    for (const b of $("platforms").children) {
+      b.hidden = !PLATFORMS[S.lang].includes(b.dataset.p);
+      b.setAttribute("aria-pressed", b.dataset.p === S.platform ? "true" : "false");
+    }
+    for (const b of $("langs").children) {
+      b.setAttribute("aria-pressed", b.dataset.l === S.lang ? "true" : "false");
+      b.disabled = r.ms && b.dataset.l === "en";
+    }
     const feed = $("feed");
     const slot = D.slotFrom(r.notes);
     if (!pg) {
@@ -664,16 +789,25 @@
     }
     const media = () => { const m = mediaNode(pg, true); return m ? el("div", { class: "pmedia" }, m) : null; };
     let nodes = [], hint = "";
+    const a = author();
 
-    if (S.platform === "linkedin" || S.platform === "facebook") {
+    if (S.platform === "instagram") {
+      // Instagram: the picture first, then the caption cut after about 125 characters.
+      const f = D.fold(post, 125, 2);
+      nodes.push(el("article", { class: "post ig" }, who(r, ""), media(), foldedText(post, f, "more"),
+        comment ? el("div", { class: "comment" }, el("span", { class: "avatar sm", text: a.mark }),
+          el("div", { class: "bubble" }, el("b", { text: `${a.name} · first comment` }), el("p", { text: comment }))) : null));
+      hint = "Instagram shows about two lines of the caption under the picture. Captions go up to 2,200 characters; links in them don't click.";
+    } else if (S.platform === "linkedin" || S.platform === "facebook") {
       const li = S.platform === "linkedin";
       const f = li ? D.linkedinFold(post) : D.facebookFold(post);
       const m = media();
       nodes.push(el("article", { class: "post" }, who(r, slot), foldedText(post, f, li ? "see more" : "See more"),
         m, m && !creative(pg).video && creative(pg).carousel && li ? el("div", { class: "doc-cap", text: "Document · swipe through the slides" }) : null,
-        comment ? el("div", { class: "comment" }, el("span", { class: "avatar sm", text: "RZ" }),
-          el("div", { class: "bubble" }, el("b", { text: "Rihards Zeila · first comment" }), el("p", { text: comment }))) : null));
+        comment ? el("div", { class: "comment" }, el("span", { class: "avatar sm", text: a.mark }),
+          el("div", { class: "bubble" }, el("b", { text: `${a.name} · first comment` }), el("p", { text: comment }))) : null));
       hint = li ? "The cut is about where LinkedIn's \"…see more\" falls on a laptop. On a phone it comes a little earlier."
+        : S.lang === "lv" ? "The Mārketinga Skola Facebook page. Posted by hand until the Latvian publisher exists."
         : "Zernio posts a copy to Facebook in the same slot, with the cover image (or the video).";
     } else {
       const max = S.platform === "x" ? 280 : 500;
@@ -690,6 +824,7 @@
   // ---- wiring --------------------------------------------------------------
   $("platforms").addEventListener("click", (e) => { const p = e.target.closest("button")?.dataset.p; if (p && leaveEdit()) { S.platform = p; S.expanded = false; store.set("desk.platform", p); render(); } });
   $("langs").addEventListener("click", (e) => { const l = e.target.closest("button")?.dataset.l; if (l && l !== S.lang && leaveEdit()) { S.lang = l; S.expanded = false; render(); } });
+  $("plan-toggle").onclick = () => showView(S.view === "plan" ? "desk" : "plan");
   $("edit-text").onclick = startEdit;
   $("editor").addEventListener("submit", saveEdit);
   $("ed-cancel").onclick = () => { S.edit = null; render(); };
