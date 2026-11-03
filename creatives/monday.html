@@ -1,0 +1,103 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>MONDAY cover</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  html[lang="lv"] h1 { font-size: 56px; }
+  .sheet { flex: 1; margin: 26px 0 20px; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 22px 28px;
+    border: 1px solid var(--line); border-radius: 20px; background: var(--card); }
+  .s-top { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .s-top b { font: 700 26px Arial, sans-serif; }
+  .s-top .date { font: 500 15px Inter; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+  .s-top .done { margin-left: auto; display: flex; align-items: center; gap: 8px; font: 500 17px Inter; color: var(--green); }
+  .s-top .done svg { width: 20px; height: 20px; }
+  .lab { font: 600 13px Inter; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .order { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 7px 16px 7px 7px; font: 600 18px Inter; color: var(--ink);
+    background: var(--line); white-space: nowrap; }
+  .pill i { width: 26px; height: 26px; border-radius: 50%; background: var(--cyan); color: var(--bg); display: grid; place-items: center; font: 700 14px Inter; font-style: normal; }
+  .pill.no { background: transparent; border: 1px solid var(--line); color: var(--dim); text-decoration: line-through; text-decoration-color: var(--red); padding-left: 14px; }
+  .calls { display: flex; flex-direction: column; }
+  .call { display: grid; grid-template-columns: 200px 1fr auto; align-items: center; gap: 14px; padding: 11px 6px; border-top: 1px solid var(--line); border-radius: 8px; }
+  .call:first-child { border-top: 0; }
+  .call b { font: 600 19px Inter; color: var(--ink); }
+  .call span { font: 400 17px Inter; color: var(--muted); }
+  .verdict { font: 700 16px Inter; letter-spacing: .04em; border-radius: 8px; padding: 6px 12px; white-space: nowrap; }
+  .v-scale { background: rgba(60, 207, 126, .16); color: var(--green); }
+  .v-kill { background: rgba(255, 107, 111, .16); color: var(--red); }
+  .v-hold { background: rgba(143, 163, 184, .16); color: var(--muted); }
+  .v-leak { background: rgba(255, 176, 32, .16); color: var(--amber); }
+  .note { display: flex; gap: 14px; align-items: stretch; }
+  .chat { flex: 1.4; background: rgba(3, 195, 248, .10); border: 1px solid rgba(3, 195, 248, .3); border-radius: 16px 16px 16px 4px; padding: 12px 16px; }
+  .chat .who { display: flex; align-items: center; gap: 8px; font: 600 16px Inter; color: var(--ink); margin-bottom: 4px; }
+  .chat .who svg { width: 18px; height: 18px; }
+  .chat p { font: 400 17px/1.4 Inter; color: var(--text); }
+  .ceil { flex: 1; display: flex; align-items: center; gap: 12px; border: 1px dashed #2a5677; border-radius: 14px; padding: 12px 16px; font: 500 16px/1.35 Inter; color: var(--text); }
+  .ceil svg { font-size: 24px; color: var(--cyan); flex: none; }
+</style></head>
+<body><div class="glow"></div><div class="page" id="page"></div>
+<script src="marks.js"></script>
+<script src="kit.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+  // The weekly Meta review as the one page Claude leaves every Monday (monday-ads-review-with-claude): the metric
+  // order, kill / scale / hold / checkout leak and the budget ceiling are the real rules; the ads and their numbers
+  // are illustrative. 3 Nov: square and dark like the carousels, the 80/20 test row dropped for space.
+  const usd = (n) => T(`$${n}`, `${n} $`);
+  const calls = [
+    [T("Ad family A", "Reklāmu grupa A"), T(`${usd(21)} a sale, 3 days under target`, `${usd(21)} par pirkumu, 3 dienas zem mērķa`), "v-scale", T("SCALE +25%", "PALIELINĀT +25 %")],
+    [T("Ad family B", "Reklāmu grupa B"), T(`${usd(41)} a sale after a fair test`, `${usd(41)} par pirkumu pēc godīga testa`), "v-kill", T("KILL", "APTURĒT")],
+    [T("Ad C", "Reklāma C"), T("2 days old, 18 clicks", "2 dienas, 18 klikšķi"), "v-hold", T("HOLD", "GAIDĪT")],
+    [T("Landing page", "Landing page"), T("14 checkouts, 1 sale", "14 sākti checkout, 1 pirkums"), "v-leak", T("FIX THE PAGE", "LABO LAPU")],
+  ];
+  const order = [T("Cost per sale", "Cena par pirkumu"), T("Checkouts", "Sākti checkout"), T("Link CPC", "Cena par klikšķi"), "CTR"];
+
+  document.getElementById("page").innerHTML = `
+    ${header(["Claude", "Meta ads"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
+    <p class="eyebrow">${T("Meta ads · every Monday", "Meta reklāmas · katru pirmdienu")}</p>
+    <h1>${T(`My Monday ads meeting<em>is a <span class="hl">Claude task</span> now.</em>`,
+      `Mana pirmdienas reklāmu sapulce<em>tagad ir <span class="hl">Claude uzdevums.</span></em>`)}</h1>
+    <div class="sheet">
+      <div class="s-top"><b>${T("Monday review", "Pirmdienas pārskats")}</b><span class="date">${T("Mon 9 Nov", "pirmd., 9. nov.")}</span>
+        <span class="done">${mark("Claude")}${T("done before I start", "gatavs, pirms sāku darbu")}</span></div>
+      <div><p class="lab">${T("Read in this order", "Rādītāju secība")}</p>
+        <div class="order">${order.map((o, i) => `<span class="pill"><i>${i + 1}</i>${o}</span>`).join("")}<span class="pill no">${T("plain clicks", "visi klikšķi")}</span></div></div>
+      <div><p class="lab">${T("This week's calls", "Šīs nedēļas lēmumi")}</p>
+        <div class="calls">${calls.map(([a, b, c, d]) => `<div class="call"><b>${a}</b><span>${b}</span><span class="verdict ${c}">${d}</span></div>`).join("")}</div></div>
+      <div class="note">
+        <div class="chat"><div class="who">${mark("Claude")}Claude</div><p>${T("Paused 1, scaled 1, held 1. The landing page needs you.",
+          "Apturēju 1 reklāmu, 1 reklāmai palielināju budžetu, 1 atstāju. Tev jāpārbauda landing page.")}</p></div>
+        <div class="ceil"><i data-lucide="lock"></i>${T("Never above my daily ceiling without asking", "Bez atļaujas nepārsniedz dienas budžetu")}</div>
+      </div>
+    </div>
+    ${cta(T("Comment", "Komentē"), T("MONDAY", "PIRMDIENA"), T("for the prompt", "un saņem promptu"),
+      T("Free, sent by DM. Screens are illustrative.", "Bez maksas, privātā ziņā. Attēli ir ilustratīvi."))}`;
+  lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
+
+  // Motion: the headline is the hook from the first frame, the reading order lights 1 to 4, the four calls stamp in
+  // and Claude's note types; then a cyan wash walks the calls and the keyword nudges. Still = renderAt(COVER).
+  window.SCENE = { width: 1080, height: 1080, duration: 11, poster: 4.5 };
+  const COVER = Infinity;
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const css = (el, o) => el && Object.assign(el.style, o);
+  const chat = document.querySelector(".chat p"), chatText = Array.from(chat.textContent);
+
+  window.renderAt = (t) => {
+    const still = t === COVER;
+    const at = (a, b) => (still ? 1 : ease((t - a) / (b - a)));
+    document.querySelectorAll(".pill").forEach((p, k) => { const v = at(0.05 + 0.1 * k, 0.25 + 0.1 * k); css(p, { opacity: v, transform: `translateY(${(1 - v) * 10}px)` }); });
+    document.querySelectorAll(".call").forEach((c, k) => {
+      const v = at(0.35 + 0.2 * k, 0.6 + 0.2 * k), w = at(0.55 + 0.2 * k, 0.7 + 0.2 * k);
+      const lit = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 5.2 - k * 0.9) / 0.9)));
+      css(c, { opacity: v, transform: `translateX(${(1 - v) * -18}px)`, background: lit > 0.01 ? `rgba(3, 195, 248, ${0.16 * lit})` : "" });
+      css(c.querySelector(".verdict"), { transform: `scale(${1.25 - 0.25 * w})`, opacity: w });
+    });
+    css(document.querySelector(".note"), { opacity: at(1.3, 1.5) });
+    chat.textContent = still ? chatText.join("") : chatText.slice(0, Math.round(chatText.length * clamp((t - 1.5) / 1.2))).join("");
+    const nudge = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 9.0) / 0.8)), Math.sin(Math.PI * clamp((t - 10.0) / 0.8)));
+    css(document.querySelector(".cta .key"), { transform: `scale(${1 + 0.08 * nudge})`, display: "inline-block" });
+  };
+  renderAt(COVER);
+  chat.style.minHeight = `${chat.offsetHeight}px`;
+</script>
+</body></html>

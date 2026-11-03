@@ -1,0 +1,97 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>AUDIT cover</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="tiles.css">
+<style>
+  .vs { display: flex; align-items: flex-end; gap: 20px; }
+  .vs div { display: flex; flex-direction: column; gap: 4px; }
+  .vs b { font: 700 48px/1 Inter; color: var(--dim); }
+  .vs div + div b { color: var(--ink); }
+  .vs svg { font-size: 30px; color: var(--muted); margin-bottom: 10px; }
+  .funnel { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 14px; }
+  .funnel i { display: block; height: 16px; border-radius: 8px; background: var(--cyan); }
+  .funnel b { font: 700 22px Inter; color: var(--ink); }
+  .ramp { display: flex; align-items: flex-end; gap: 10px; height: 104px; }
+  .ramp div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 5px; }
+  .ramp i { display: block; width: 100%; border-radius: 6px 6px 0 0; background: #1d4a6b; }
+  .ramp div:last-child i { background: var(--cyan); }
+  .ramp b { font: 600 15px Inter; color: var(--ink); }
+  .ramp span { font: 500 14px Inter; color: var(--muted); white-space: nowrap; }
+</style></head>
+<body><div class="glow"></div><div class="page" id="page"></div>
+<script src="marks.js"></script>
+<script src="kit.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+  // Four of the seven read-only prompts of the AUDIT pack (black-friday-meta-ads-audit), one screen each (3 Nov:
+  // square, less text). 68 vs 54, 2.5, -30% and +20% every 3 days are his published numbers; the rest is illustrative.
+  const usd = (n) => T(`$${n}`, `${String(n).replace(".", ",")} $`);
+  const tile = (n, title, ui, cls = "") => `<div class="tile ${cls}"><h3><small>0${n}</small>${title}</h3><div class="ui">${ui}</div></div>`;
+  const ramp = [["12", 100], ["15", 120], ["18", 144], ["21", 173], ["24", 207]];
+  const tiles = [
+    tile(1, T("Real orders vs Meta's count", "Īstie pasūtījumi pret Meta datiem"), `
+      <div class="vs"><div><span class="lbl">${T("Meta says", "Meta rāda")}</span><b>68</b></div><i data-lucide="arrow-right"></i>
+        <div><span class="lbl">${T("Shop says", "Veikalā")}</span><b>54</b></div></div>
+      <div><span class="tag red">${T("+26% to fix first", "+26 %: labo vispirms")}</span></div>`),
+    tile(4, T("Ads people are tired of", "Reklāmas, kas jau apnikušas"), `
+      <div class="r4">
+        <div class="freq"><span class="lbl">${T("Frequency", "Biežums")}</span><b>${T("2.8", "2,8")}</b><span class="lim">${T("limit 2.5", "robeža 2,5")}</span></div>
+        <div class="spark"><svg viewBox="0 0 200 40" preserveAspectRatio="none"><polyline points="0,6 30,5 60,9 90,15 120,22 150,28 200,33" fill="none"
+          stroke="#ff6b6f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>
+          <span>${T("CTR −30%", "CTR −30 %")}</span></div></div>`, "dark"),
+    tile(5, T("Where checkouts leak", "Kur cilvēki pamet checkout"), `
+      <div class="funnel"><i style="width:100%"></i><b>14</b><i style="width:7%"></i><b>1</b></div>
+      <div class="alert"><i data-lucide="triangle-alert"></i><span>${T("14 checkouts, 1 sale: fix the page", "14 sākti checkout, 1 pirkums: labo lapu")}</span></div>`, "dark"),
+    tile(6, T("Raise the budget slowly", "Budžetu cel lēnām"), `
+      <div class="ramp">${ramp.map(([d, v]) => `<div><b>${usd(v)}</b><i style="height:${Math.round(v / 207 * 60)}px"></i><span>${T(`${d} Nov`, `${d}. nov.`)}</span></div>`).join("")}</div>
+      <span class="lbl">${T("+20% every 3 days", "+20 % reizi 3 dienās")}</span>`),
+  ];
+
+  document.getElementById("page").innerHTML = `
+    ${header(["Claude", "Meta ads"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
+    <p class="eyebrow">${T("Read-only · before 27 Nov", "Meta reklāmas · tikai lasa datus")}</p>
+    <h1>${T(`Black Friday audit<em>in <span class="hl">7 prompts.</span></em>`, `Pirms Black Friday:<em>audits ar <span class="hl">7 promptiem.</span></em>`)}</h1>
+    <div class="tiles">${tiles.join("")}</div>
+    ${cta(T("Comment", "Komentē"), T("AUDIT", "AUDITS"), T("for all 7 prompts", "un saņem 7 promptus"),
+      T("Free, sent by DM. Screens are illustrative.", "Bez maksas, privātā ziņā. Attēli ir ilustratīvi."))}`;
+  lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
+
+  // Motion, as in ads.html: the headline is the hook, the screens land by 1.2 s and each plays, then a cyan frame
+  // walks them from 5.5 s and the keyword nudges. The still cover is renderAt(COVER).
+  window.SCENE = { width: 1080, height: 1080, duration: 11, poster: 4.5 };
+  const COVER = Infinity;
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const css = (el, o) => el && Object.assign(el.style, o);
+  const IN = (i) => 0.1 + i * 0.3;
+  const tl = [...document.querySelectorAll(".tile")];
+  const pop = (el, p) => css(el, { opacity: p, transform: `scale(${0.85 + 0.15 * p})` });
+
+  window.renderAt = (t) => {
+    const still = t === COVER;
+    const at = (a, b) => (still ? 1 : ease((t - a) / (b - a)));
+    const s = (i, d, len) => at(IN(i) + d, IN(i) + d + len);
+    tl.forEach((el, i) => {
+      const p = at(IN(i), IN(i) + 0.3), lit = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 5.5 - i * 0.8) / 0.8)));
+      css(el, { opacity: p, transform: `translateY(${(1 - p) * 26}px)`, boxShadow: lit > 0.01 ? `0 0 0 ${(3 * lit).toFixed(2)}px #03c3f8` : "" });
+    });
+    // 1: Meta's count, then the shop's, then the gap
+    const v = tl[0].querySelectorAll(".vs b");
+    v[0].textContent = Math.round(68 * s(0, 0.15, 0.5)); v[1].textContent = Math.round(54 * s(0, 0.45, 0.5));
+    pop(tl[0].querySelector(".tag"), s(0, 0.9, 0.2));
+    // 2: frequency climbs past the limit while CTR falls
+    const b4 = s(1, 0.2, 0.8), f = (1.2 + 1.6 * b4).toFixed(1);
+    tl[1].querySelector(".freq b").textContent = T(f, f.replace(".", ","));
+    css(tl[1].querySelector(".spark svg"), { clipPath: `inset(0 ${100 - 100 * b4}% 0 0)` });
+    // 3: 14 checkouts shrink to 1 sale, then the warning
+    const fb = tl[2].querySelectorAll(".funnel i");
+    css(fb[0], { width: `${100 * s(2, 0.1, 0.4)}%` }); css(fb[1], { width: `${7 * s(2, 0.5, 0.3)}%` });
+    css(tl[2].querySelector(".alert"), { opacity: s(2, 0.8, 0.2) });
+    // 4: the ramp bars grow in turn
+    tl[3].querySelectorAll(".ramp i").forEach((b, k) => css(b, { transform: `scaleY(${s(3, 0.2 + 0.15 * k, 0.3)})`, transformOrigin: "bottom" }));
+    const nudge = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 9.0) / 0.8)), Math.sin(Math.PI * clamp((t - 10.0) / 0.8)));
+    css(document.querySelector(".cta .key"), { transform: `scale(${1 + 0.08 * nudge})`, display: "inline-block" });
+  };
+  renderAt(COVER);
+</script>
+</body></html>

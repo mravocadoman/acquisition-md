@@ -1,8 +1,8 @@
 {
   "_source": "Latvian version of Marketinga SKola social/motion/specs/start.json (2 Nov 2026). The STARTS guide's own counts.",
   "template": "grid",
-  "theme": "light",
-  "eyebrow": "IZSTRĀDES ŽURNĀLS · PRINT-ON-DEMAND AI PROJEKTS",
+  "theme": "dark",
+  "eyebrow": "AI PROJEKTA IZSTRĀDE · PRINT-ON-DEMAND",
   "title": "AI produkts: 25 izmaiņas.",
   "cells": [
     "UX",
@@ -38,9 +38,9 @@
     "label": "MATERIĀLS",
     "title": "25 izmaiņas, katra savā kategorijā.",
     "items": [
-      "Pilnais žurnāls ar visām 25 izmaiņām",
+      "Visas 25 izmaiņas un to iemesli",
       "Kāpēc tikai četras bija par AI",
-      "Kā vest savu žurnālu"
+      "Veidne, kurā pierakstīt savas izmaiņas"
     ]
   },
   "keyword": "STARTS",

@@ -1,0 +1,85 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ADS cover</title>
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="tiles.css">
+<style>
+  html[lang="lv"] h1 { font-size: 56px; }
+</style></head>
+<body><div class="glow"></div><div class="page" id="page"></div>
+<script src="marks.js"></script>
+<script src="kit.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+  // Four of the seven rules from the ADS article, each as the screen it would show (3 Nov: square, less text, so
+  // four screens instead of seven). Numbers come from the article (68 vs 54, +20%, $40, $70) or are marked
+  // illustrative on the cover; ad names are generic on purpose.
+  const usd = (n) => T(`$${n}`, `${n.replace(".", ",")} $`);
+  const tile = (n, title, ui, cls = "") => `<div class="tile ${cls}"><h3><small>0${n}</small>${title}</h3><div class="ui">${ui}</div></div>`;
+  const tiles = [
+    tile(1, T("Count real orders, not Meta's", "Skaita tikai īstos pasūtījumus"), `
+      <div class="br"><span>${T("Meta says", "Meta rāda")}</span><div class="track"><i style="width:100%;background:var(--dim)"></i></div><b>68</b></div>
+      <div class="br"><span>${T("Shop says", "Veikalā")}</span><div class="track"><i style="width:79%"></i></div><b>54</b></div>
+      <div><span class="tag red">${T("+26% too high", "+26 % par daudz")}</span></div>`),
+    tile(2, T("Move the budget slowly", "Budžetu maina pakāpeniski"), `
+      <div class="budget"><span class="fld"><span>${usd("70.00")}</span><i data-lucide="arrow-right"></i><b>${usd("84.00")}</b></span></div>
+      <div class="chips"><span class="chip">${T("max +20%", "maks. +20 %")}</span><span class="chip">${T("every 3 days", "reizi 3 dienās")}</span></div>`, "dark"),
+    tile(3, T("Pause the ads that don't sell", "Aptur reklāmas, kas nepārdod"), `
+      <div class="row head"><span></span><span>${T("Ad", "Reklāma")}</span><span>${T("Spent", "Iztērēts")}</span><span>${T("Sales", "Pirkumi")}</span><span></span></div>
+      <div class="row"><span class="tg on"></span><span>${T("Ad A", "A")}</span><span>${usd("22.10")}</span><span>2</span><span></span></div>
+      <div class="row off"><span class="tg"></span><span>${T("Ad C", "C")}</span><span>${usd("40.00")}</span><span>0</span>
+        <span class="tag red">${T("Paused", "Apturēta")}</span></div>`),
+    tile(5, T("A kill switch", "Avārijas slēdzis"), `
+      <div class="alert"><i data-lucide="siren"></i><span>${T("0 sales, 3 days running", "3 dienas bez pirkumiem")}</span></div>
+      <div class="alert ok"><i data-lucide="circle-pause"></i><span>${T("Paused. I get a message.", "Kampaņa apturēta, un es saņemu ziņu")}</span></div>`, "dark"),
+  ];
+
+  document.getElementById("page").innerHTML = `
+    ${header(["Claude", "Meta ads"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
+    <p class="eyebrow">${T("Meta ads · every morning", "Meta reklāmas · katru rītu")}</p>
+    <h1>${T(`Claude runs my Meta ads.<em>These are its <span class="hl">7 rules.</span></em>`,
+      `<span class="hl">7 noteikumi</span>, pēc kuriem Claude<em>vada manas Meta reklāmas.</em>`)}</h1>
+    <div class="tiles">${tiles.join("")}</div>
+    ${cta(T("Comment", "Komentē"), T("ADS", "META"), T("for all 7 rules", "un saņem 7 noteikumus"),
+      T("Free, sent by DM. Screens are illustrative.", "Bez maksas, privātā ziņā. Attēli ir ilustratīvi."))}`;
+  lucide.createIcons({ attrs: { "stroke-width": 1.8 } });
+
+  // Motion, for tools/record-html.mjs (Marketinga Skola): every frame is computed from t, no CSS animation.
+  // The headline is up from the first frame (the hook), the four screens land by 1.2 s and each plays, then from
+  // 5.5 s a cyan frame walks them so they get read, and the keyword nudges at the end. Still = renderAt(COVER).
+  window.SCENE = { width: 1080, height: 1080, duration: 11, poster: 4.5 };
+  const COVER = Infinity;
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => 1 - Math.pow(1 - clamp(x), 3);
+  const css = (el, o) => el && Object.assign(el.style, o);
+  const IN = (i) => 0.1 + i * 0.3;
+  const tl = [...document.querySelectorAll(".tile")];
+
+  window.renderAt = (t) => {
+    const still = t === COVER;
+    const at = (a, b) => (still ? 1 : ease((t - a) / (b - a)));
+    const s = (i, d, len) => at(IN(i) + d, IN(i) + d + len);   // a step inside tile i
+    tl.forEach((el, i) => {
+      const p = at(IN(i), IN(i) + 0.3), lit = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 5.5 - i * 0.8) / 0.8)));
+      css(el, { opacity: p, transform: `translateY(${(1 - p) * 26}px)`, boxShadow: lit > 0.01 ? `0 0 0 ${(3 * lit).toFixed(2)}px #03c3f8` : "" });
+    });
+    // 1: both bars fill and count up, then the gap is called out
+    const b1 = s(0, 0.2, 0.7);
+    tl[0].querySelectorAll(".track i").forEach((bar, k) => css(bar, { width: `${b1 * [100, 79][k]}%` }));
+    tl[0].querySelectorAll(".br b").forEach((n, k) => (n.textContent = Math.round(b1 * [68, 54][k])));
+    css(tl[0].querySelector(".tag"), { opacity: s(0, 0.9, 0.2), transform: `scale(${0.8 + 0.2 * s(0, 0.9, 0.2)})` });
+    // 2: the budget steps from 70 to 84, then the two limits
+    tl[1].querySelector(".fld b").textContent = usd((70 + 14 * s(1, 0.3, 0.7)).toFixed(2));
+    tl[1].querySelectorAll(".chip").forEach((c, k) => css(c, { opacity: s(1, 0.8 + 0.15 * k, 0.2) }));
+    // 3: ad C is switched off
+    const rowC = tl[2].querySelectorAll(".row")[2], off = still || t > IN(2) + 0.7;
+    rowC.classList.toggle("off", off);
+    rowC.querySelector(".tg").classList.toggle("on", !off);
+    css(rowC.querySelector(".tag"), { opacity: off ? s(2, 0.75, 0.2) : 0 });
+    // 4: the alarm, then the pause
+    tl[3].querySelectorAll(".alert").forEach((a, k) => { const p = s(3, 0.2 + 0.5 * k, 0.2); css(a, { opacity: p, transform: `translateX(${(1 - p) * -16}px)` }); });
+    const nudge = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 9.0) / 0.8)), Math.sin(Math.PI * clamp((t - 10.0) / 0.8)));
+    css(document.querySelector(".cta .key"), { transform: `scale(${1 + 0.08 * nudge})`, display: "inline-block" });
+  };
+  renderAt(COVER);
+</script>
+</body></html>

@@ -32,10 +32,10 @@
     "Vērtē pēc īstiem pasūtījumiem, nevis pēc Meta datiem.",
     "Learning fāzē neaiztiec. Budžetu maini lēnām.",
     "Vājas reklāmas aptur pēc noteikuma, nevis noskaņojuma.",
-    "Nolietojumu aizstāj ar vienu skaidru testu.",
-    "Avārijas slēdzis. Tad paziņo cilvēkam.",
-    "Noteikumi, kurus tas nevar apiet.",
-    "Tikai pilnas dienas. Pārbaudi katru izmaiņu. Pieraksti."
+    "Nolietotas reklāmas vietā palaid vienu skaidru testu.",
+    "Iedarbini avārijas slēdzi un pēc tam paziņo cilvēkam.",
+    "Noteikumi, kurus Claude nevar apiet.",
+    "Izmanto tikai pilnu dienu datus, pārbaudi un pieraksti katru izmaiņu."
   ],
   "cards": [
     {
@@ -58,7 +58,7 @@
       "prefix": "+",
       "value": 20,
       "unit": " %",
-      "note": "lielākā budžeta izmaiņa, ko tas drīkst veikt",
+      "note": "lielākā budžeta izmaiņa, ko Claude drīkst veikt",
       "tone": "light"
     },
     {
@@ -66,7 +66,7 @@
       "lab": "META UZRĀDA PĀRĀK DAUDZ PIRKUMU",
       "value": 20,
       "unit": " %",
-      "note": "tāpēc tas vērtē tikai īstos pasūtījumus"
+      "note": "tāpēc Claude vērtē tikai īstos pasūtījumus"
     },
     {
       "type": "rows",
@@ -102,7 +102,7 @@
     {
       "type": "toggle",
       "lab": "AVĀRIJAS SLĒDZIS",
-      "note": "nostrādā pēc 350 $, ja īstais CPA ir par augstu"
+      "note": "nostrādā, ja pēc 350 $ tēriņiem īstais CPA ir par augstu"
     },
     {
       "type": "stat",

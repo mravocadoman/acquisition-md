@@ -1,0 +1,45 @@
+/* Lead-magnet videos and covers, 1080×1080. Rihards, 3 Nov: keep these videos, but match the carousels ("dark
+   background etc"), with less text, and square so LinkedIn never crops them. So: the navy deck theme of
+   decks/deck2.py, a bold sans headline with cyan highlights, a cyan kicker, dark screen cards and an amber comment
+   bar like the deck's gate slide. */
+:root {
+  --bg: #00152c; --card: #0b2340; --line: #12365a; --ink: #eaf3fb; --text: #c9d8e6; --muted: #8fa3b8; --dim: #5f7a92;
+  --cyan: #03c3f8; --red: #ff6b6f; --green: #3ccf7e; --amber: #ffb020;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1080px; overflow: hidden; background: var(--bg); }
+body { font-family: Archivo, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; position: relative; }
+.glow { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(55% 40% at 50% 62%, rgba(3, 195, 248, .08), transparent 70%); }
+.page { position: absolute; inset: 0; padding: 44px 56px 34px; display: flex; flex-direction: column; }
+.page::before { content: ""; position: absolute; left: 56px; top: 0; width: 160px; height: 6px; background: var(--cyan); }
+
+.top { display: flex; justify-content: space-between; align-items: center; }
+.author { display: flex; align-items: center; gap: 14px; }
+.author img { width: 62px; height: 62px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--line); }
+.author b { display: block; font: 700 23px/1.2 Arial, sans-serif; }
+.author span { font: 400 18px/1.3 Arial, sans-serif; color: var(--muted); }
+.logos { display: flex; gap: 10px; }
+.logo { width: 58px; height: 58px; border-radius: 15px; background: #fff; display: grid; place-items: center; }
+.logo svg { width: 30px; height: 30px; }
+
+.eyebrow { margin-top: 30px; font: 700 18px Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; color: var(--cyan); }
+h1 { margin-top: 12px; font-family: Arial, "Helvetica Neue", sans-serif; font-weight: 700; font-size: 66px; line-height: 1.04; letter-spacing: -.015em; }
+h1 em { display: block; font-style: normal; }
+h1 .hl { color: var(--cyan); }
+
+.cta { margin-top: auto; height: 88px; border-radius: 18px; background: var(--amber); color: var(--bg);
+  display: flex; align-items: center; justify-content: center; gap: 14px; white-space: nowrap;
+  font: 700 34px Arial, sans-serif; letter-spacing: -.01em; }
+.cta .key { background: var(--bg); color: var(--amber); border-radius: 12px; padding: 6px 20px; }
+.fine { margin-top: 10px; text-align: center; font: 400 16px Inter; color: var(--muted); }
+
+/* UI bits shared by the screen cards */
+.tag { display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; padding: 5px 11px; font: 600 17px Inter; white-space: nowrap; }
+.tag.red { background: rgba(255, 107, 111, .16); color: var(--red); }
+.tag.green { background: rgba(60, 207, 126, .16); color: var(--green); }
+.tag.cyan { background: rgba(3, 195, 248, .16); color: var(--cyan); }
+.tag.grey { background: rgba(143, 163, 184, .16); color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid #2a5677; border-radius: 999px; padding: 6px 13px;
+  font: 500 17px Inter; color: var(--text); white-space: nowrap; }
+svg.lucide { width: 1em; height: 1em; }

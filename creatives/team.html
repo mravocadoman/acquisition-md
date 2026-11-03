@@ -1,0 +1,128 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>TEAM cover</title>
+<link rel="stylesheet" href="base.css">
+<style>
+  h1 { font-size: 88px; }
+  html[lang="lv"] h1 { font-size: 70px; }
+  .orbit { --cy: 50%; position: relative; flex: 1; margin: 0 -64px 14px; }
+  .orbit > * { position: absolute; }
+  .spokes { inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .ring { left: 50%; top: var(--cy); transform: translate(-50%, -50%); }
+  .pulse { left: 50%; top: var(--cy); border: 2px solid var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); opacity: 0; }
+  .hub { left: 50%; top: calc(var(--cy) - 30px); width: 150px; height: 150px; border-radius: 38px;
+    background: linear-gradient(160deg, #f0668b, #d93a63); display: grid; place-items: center;
+    box-shadow: 0 22px 40px rgba(217, 58, 99, .32), inset 0 1px 0 rgba(255, 255, 255, .35); }
+  .hub svg { width: 92px; height: 92px; }
+  .pedestal { left: 50%; top: calc(var(--cy) + 52px); transform: translate(-50%, -50%); width: 250px; height: 46px;
+    border: 1.5px solid #cdd7de; border-radius: 50%; }
+  .me { left: 50%; top: calc(var(--cy) + 98px); display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; box-shadow: 0 8px 22px rgba(0, 33, 56, .1);
+    font: 600 15px Inter; color: var(--navy); white-space: nowrap; }
+  .me .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--navy); color: #fff; display: grid; place-items: center; font-size: 15px; }
+  .me svg.notion { width: 20px; height: 20px; }
+  /* A node sits on the ring; its label sits just outside it, on the far side from the hub, at any rotation. */
+  .node { width: 0; height: 0; }
+  .node .c { position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; border-radius: 50%; background: #fff;
+    border: 1px solid var(--line); box-shadow: 0 8px 22px rgba(0, 33, 56, .09); display: grid; place-items: center;
+    font-size: 32px; color: var(--navy); }
+  .node .dot { position: absolute; left: 21px; top: -37px; width: 14px; height: 14px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 3px #fff; }
+  .node.off .c { color: #9aabb8; }
+  .node.off .dot { background: #c3ced6; }
+  .node .lab { position: absolute; width: max-content; max-width: 180px; }
+  .node b { display: block; font: 600 20px/1.2 Archivo; }
+  .node span { display: block; font: 400 16px/1.3 Inter; color: var(--muted); }
+  .legend { right: 64px; top: 4px; display: flex; gap: 18px; font: 500 16px Inter; color: var(--muted); }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 7px; vertical-align: -1px; }
+</style></head>
+<body><div class="glow"></div><div class="page" id="page"></div>
+<script src="marks.js"></script>
+<script src="kit.js"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+  // The nine n8n workflows from the TEAM article, in plain job titles. Two are paused (planner, Latvian writer).
+  const workers = [
+    ["calendar-range", T("Planner", "Plānotājs"), T("25th, monthly", "25. datumā"), true],
+    ["file-pen-line", T("Post maker", "Ierakstu sagatavotājs"), T("08:00, weekdays", "8:00 darbdienās")],
+    ["gift", T("Guide maker", "Materiālu veidotājs"), T("on demand", "pēc vajadzības")],
+    ["send", T("Publisher", "Publicētājs"), T("on approval", "pēc apstiprinājuma")],
+    ["magnet", T("Keyword publisher", "Atslēgvārdu publicētājs"), T("on approval", "pēc apstiprinājuma")],
+    ["languages", T("Latvian writer", "Latviešu tekstu autors"), T("12:05, daily", "12:05 katru dienu"), true],
+    ["bell-ring", T("Live bell", "Paziņojumi"), T("every 10 min", "ik pēc 10 min.")],
+    ["siren", T("Alarm", "Trauksme"), T("on any error", "jebkuras kļūdas gadījumā")],
+    ["moon-star", T("Night watch", "Datubāzes nakts sargs"), T("every 6 hours", "ik pēc 6 h")],
+  ];
+  const R = T(236, 222);   // Latvian labels run to three lines, so its ring is smaller
+
+  document.getElementById("page").innerHTML = `
+    ${header(["Notion", "n8n", "Claude", "Telegram"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
+    <p class="eyebrow">${T("Automation", "Automatizācija")}</p>
+    <h1>${T("My marketing team has", "Manā mārketinga komandā<br>ir deviņi darbinieki,")}<em>${T("nine workers. None human.", "un neviens nav cilvēks.")}</em></h1>
+    <p class="lede">${T("I tick one box in Notion. The nine automations do the rest.",
+      "Es Notion atzīmēju vienu rūtiņu, un visu pārējo paveic deviņas automatizācijas.")}</p>
+    <div class="orbit">
+      <svg class="spokes"></svg>
+      <div class="legend"><span><i style="background:var(--green)"></i><b id="live" style="font-weight:500">7</b> ${T("live", "strādā")}</span>
+        <span><i style="background:#c3ced6"></i>${T("2 paused", "2 apturēti")}</span></div>
+      <svg class="ring" width="${2 * R}" height="${2 * R}" viewBox="0 0 ${2 * R} ${2 * R}"><circle cx="${R}" cy="${R}" r="${R - 1}" fill="none" stroke="#c9d4dc" stroke-width="1.5" stroke-dasharray="2 7" stroke-linecap="round"/></svg>
+      <div class="pulse"></div>
+      <div class="pedestal"></div>
+      <div class="hub">${mark("n8n", "#fff")}</div>
+      <div class="me"><span class="box">✓</span>${mark("Notion").replace("<svg", '<svg class="notion"')}${T("My job: one tick", "Mans darbs: viens ķeksītis")}</div>
+      ${workers.map(([icon, name, when, off]) => `<div class="node${off ? " off" : ""}"><div class="c"><i data-lucide="${icon}"></i></div><i class="dot"></i>
+        <div class="lab"><b>${name}</b><span>${when}</span></div></div>`).join("")}
+    </div>
+    ${cta(T("Comment", "Komentē"), T("TEAM", "KOMANDA"), T("for the build guide", "un saņem instrukciju"), T("Free, sent by DM.", "Bez maksas, privātā ziņā."))}`;
+  lucide.createIcons({ attrs: { "stroke-width": 1.6 } });
+
+  // Motion, for tools/record-html.mjs (Marketinga Skola): every frame is computed from t, no CSS animation.
+  // The still cover is renderAt(COVER): everything lit, ring at rest.
+  window.SCENE = { width: 1080, height: 1350, duration: 18, poster: 7.5 };
+  const COVER = Infinity;
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const ease = (x) => { x = clamp(x); return x * x * (3 - 2 * x); };
+  const seg = (t, a, b) => ease((t - a) / (b - a));
+  const ON = (i) => 2.4 + i * 0.45;                       // when worker i lights up
+  // Ring angle in degrees: a slow 8°/s turn from the start, easing up to 20°/s once everyone is working.
+  const spin = (t) => { let a = 0; for (let s = 0; s < t; s += 0.01) a += (8 + 12 * seg(s, 6.6, 9.5)) * 0.01; return a; };
+
+  const orbit = document.querySelector(".orbit");
+  const nodes = [...document.querySelectorAll(".node")];
+  const spokes = document.querySelector(".spokes");
+  const css = (el, o) => Object.assign(el.style, o);
+
+  window.renderAt = (t) => {
+    const still = t === COVER;
+    const rot = still ? 0 : spin(t);
+    const cx = orbit.clientWidth / 2, cy = orbit.clientHeight / 2;
+    let live = 0, lines = "";
+    nodes.forEach((n, i) => {
+      const a = (-90 + i * 40 + rot) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+      const on = still ? 1 : seg(t, ON(i), ON(i) + 0.35);
+      if (on > 0.5 && !n.classList.contains("off")) live++;
+      css(n, { left: `${cx + R * c}px`, top: `${cy + R * s}px`, opacity: 0.25 + 0.75 * on });
+      css(n.querySelector(".c"), { transform: `scale(${0.82 + 0.18 * on})` });
+      css(n.querySelector(".dot"), { transform: `scale(${on})` });
+      css(n.querySelector(".lab"), { left: `${48 * c}px`, top: `${48 * s}px`, transform: `translate(${-(1 - c) * 50}%, ${-(1 - s) * 50}%)`,
+        textAlign: c > 0.3 ? "left" : c < -0.3 ? "right" : "center" });
+      // A spoke from the hub flashes cyan as the worker starts, then stays as a faint line.
+      const flash = still ? 0 : Math.max(0, 1 - Math.abs(t - ON(i) - 0.15) / 0.45);
+      lines += `<line x1="${cx + 95 * c}" y1="${cy + 95 * s}" x2="${cx + (R - 46) * c}" y2="${cy + (R - 46) * s}"
+        stroke="${flash > 0.02 ? "#03c3f8" : "#dbe4ea"}" stroke-width="${2 + 2 * flash}" stroke-linecap="round" opacity="${Math.max(0.6 * on, flash)}"/>`;
+    });
+    spokes.innerHTML = lines;
+    document.getElementById("live").textContent = live;
+    // The one human step: the card rises at 0.8 s and the box is ticked at 1.5 s.
+    const me = document.querySelector(".me"), tick = still ? 1 : seg(t, 1.5, 1.75);
+    css(me, { opacity: still ? 1 : seg(t, 0.8, 1.3), transform: `translate(-50%, ${-50 + (still ? 0 : 40 * (1 - seg(t, 0.8, 1.3)))}%)` });
+    css(me.querySelector(".box"), { background: tick > 0.5 ? "var(--navy)" : "#fff", color: tick > 0.5 ? "#fff" : "transparent", transform: `scale(${1 + 0.25 * Math.sin(Math.PI * tick)})` });
+    // n8n answers the tick: the hub bumps and a ring of light runs out to the workers.
+    const fire = still ? 0 : clamp((t - 1.9) / 0.9);
+    css(document.querySelector(".hub"), { transform: `translate(-50%, -50%) scale(${1 + 0.08 * Math.sin(Math.PI * clamp((t - 1.8) / 0.4)) * (still ? 0 : 1)})` });
+    css(document.querySelector(".pulse"), { width: `${150 + (2 * R - 150) * fire}px`, height: `${150 + (2 * R - 150) * fire}px`, opacity: fire > 0 && fire < 1 ? 0.8 * (1 - fire) : 0 });
+    // The keyword nudges twice at the end.
+    const nudge = still ? 0 : Math.max(0, Math.sin(Math.PI * clamp((t - 15) / 0.8)), Math.sin(Math.PI * clamp((t - 16.2) / 0.8)));
+    css(document.querySelector(".cta .key"), { transform: `scale(${1 + 0.08 * nudge})`, display: "inline-block" });
+  };
+  renderAt(COVER);
+</script>
+</body></html>
