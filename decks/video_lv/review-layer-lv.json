@@ -1,0 +1,36 @@
+{
+  "_source": "Latvian version of Marketinga SKola social/motion/specs/review.json (2 Nov 2026). Checks are the KONTROLE guide's steps; no total, so the counter shows only these six.",
+  "template": "checklist",
+  "theme": "light",
+  "keyword": "KONTROLE",
+  "eyebrow": "AI KVALITĀTES KONTROLE",
+  "hook": {
+    "lines": [
+      "Viens AI izveido.",
+      "Otrs AI pārbauda.",
+      "3 neveiksmes: atmaksa."
+    ],
+    "mark": "Otrs AI pārbauda."
+  },
+  "typedLabel": "DIZAINA PRINCIPS",
+  "typed": "Katram solim, kurā var rasties kļūda, seko solis, kas to noķer.",
+  "checksTitle": "Uzticības kontrolsaraksts",
+  "checks": [
+    "Pārbaudi materiālus, pirms ņem naudu.",
+    "Izveido vairāk nekā vienu variantu.",
+    "Sadali vērtējumu divos atsevišķos jautājumos.",
+    "Mēģinājumu skaitu ierobežo ar konkrētu skaitli, nevis pēc sajūtas.",
+    "Kad robeža sasniegta, atmaksu veic automātiski.",
+    "Pirms izpildes rezultātu apskata cilvēks."
+  ],
+  "kit": {
+    "label": "MATERIĀLS",
+    "title": "Kvalitātes kontrole no sākuma līdz beigām.",
+    "items": [
+      "Vērtēšanas kritēriji un 85 % slieksnis",
+      "Samaksa sākumā un atmaksas nosacījumi",
+      "Cilvēka pārbaude pirms klienta apstiprinājuma"
+    ]
+  },
+  "free": "BEZ MAKSAS · SAITE PRIVĀTĀ ZIŅĀ"
+}

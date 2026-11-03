@@ -1,0 +1,721 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Post Desk</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=Orbitron:wght@600;700&display=swap">
+<style>
+  /* Layout: one post at a time. Creative | feed preview | the decision, stacking to preview-first on a phone. */
+  :root {
+    --bg: #fbfaf7; --surface: #ffffff; --ink: #0b1b2b; --muted: #5a6b7b; --line: #e1e6eb;
+    --navy: #002138; --on-navy: #fbfaf7; --navy-soft: #13344d; --navy-muted: #9fb3c4;
+    --cyan: #03c3f8; --link: #0277a8; --feed: #f3f2ef;
+    --ok: #12703f; --ok-bg: #dcf3e6; --warn: #8a4b00; --warn-bg: #fdeccf; --bad: #a32020; --bad-bg: #fde3e3;
+    --wait-bg: #eceff3;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --mark: "Orbitron", "Archivo", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #001424; --surface: #04223a; --ink: #e8eef3; --muted: #93a8ba; --line: #143650;
+      --navy: #000d18; --on-navy: #fbfaf7; --navy-soft: #0f2c44; --navy-muted: #8aa1b4;
+      --link: #5ccff7; --feed: #031a2c;
+      --ok: #6fdba0; --ok-bg: #0c3a26; --warn: #ffc071; --warn-bg: #3d2a0c; --bad: #ff9c9c; --bad-bg: #431818;
+      --wait-bg: #11304a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #001424; --surface: #04223a; --ink: #e8eef3; --muted: #93a8ba; --line: #143650;
+    --navy: #000d18; --on-navy: #fbfaf7; --navy-soft: #0f2c44; --navy-muted: #8aa1b4;
+    --link: #5ccff7; --feed: #031a2c;
+    --ok: #6fdba0; --ok-bg: #0c3a26; --warn: #ffc071; --warn-bg: #3d2a0c; --bad: #ff9c9c; --bad-bg: #431818;
+    --wait-bg: #11304a; color-scheme: dark;
+  }
+
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--body); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--navy); }
+  a { color: var(--link); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  button:disabled { cursor: default; opacity: .55; }
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+  /* The bar: name, the queue as chips. */
+  .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--navy); color: var(--on-navy); }
+  .bar-in { display: flex; align-items: center; gap: 14px; padding-block: 10px; max-width: 1320px; margin: 0 auto; }
+  .brand { font: 700 13px/1 var(--mark); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+  .brand span { color: var(--cyan); }
+  .count { font-size: 12px; color: var(--navy-muted); white-space: nowrap; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; min-width: 0; flex: 1; padding-block: 2px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 99px; padding: 5px 11px; background: var(--navy-soft); color: var(--navy-muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .chip[aria-current="true"] { background: var(--cyan); color: #002138; }
+  .chip.clash { box-shadow: inset 0 0 0 1.5px #ff8a8a; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--navy-muted); flex: none; }
+  .dot.approved { background: #3fd68a; } .dot.missed { background: #ffb347; }
+  .chip[aria-current="true"] .dot { background: #002138; }
+
+  main { max-width: 1320px; margin: 0 auto; padding-block: 20px 120px; }
+
+  /* Page-level states: loading, no connector, errors. */
+  .state { max-width: 560px; margin: 8vh auto; text-align: center; display: grid; gap: 12px; justify-items: center; }
+  .state h2 { font: 800 22px/1.2 var(--display); margin: 0; text-wrap: balance; }
+  .state p { margin: 0; color: var(--muted); }
+
+  .desk { display: grid; gap: 20px; grid-template-columns: minmax(0, .95fr) minmax(0, 1.35fr) minmax(0, .85fr);
+    grid-template-areas: "creative preview head" "creative preview decide"; grid-template-rows: auto 1fr; align-items: start; }
+  .creative { grid-area: creative; } .preview { grid-area: preview; } .head { grid-area: head; } .decide { grid-area: decide; }
+  .creative, .preview, .head, .decide { min-width: 0; display: grid; gap: 10px; align-content: start; }
+
+  .label { font: 600 10px/1 var(--mark); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+  /* Creative */
+  .media { margin: 0; border-radius: 10px; overflow: hidden; background: var(--navy); aspect-ratio: 4 / 5; max-width: 100%; display: grid; place-items: center; }
+  .media img, .media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .media.square { aspect-ratio: 1 / 1; }
+  .media .fallback { color: var(--navy-muted); padding: 24px; text-align: center; display: grid; gap: 8px; }
+  .media .fallback b { color: var(--on-navy); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; }
+
+  /* Toolbar: platform and language */
+  .toolbar { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: var(--wait-bg); border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg button { border: 0; background: none; border-radius: 6px; padding: 5px 11px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+
+  /* Feed previews */
+  .feed { background: var(--feed); border-radius: 12px; padding: 14px; display: grid; gap: 10px; }
+  .post { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; }
+  .who { display: flex; gap: 10px; align-items: center; }
+  .who b { display: block; font-size: 14px; }
+  .who small { color: var(--muted); font-size: 12px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: var(--cyan); display: grid; place-items: center; font: 700 12px/1 var(--mark); flex: none; }
+  .avatar.sm { width: 30px; height: 30px; font-size: 10px; }
+  .x .avatar { border-radius: 50%; }
+  .text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; line-height: 1.45; margin: 0; }
+  .more { border: 0; background: none; padding: 0; color: var(--muted); font-weight: 600; }
+  .pmedia { border-radius: 8px; overflow: hidden; background: var(--navy); max-width: 100%; }
+  .pmedia img, .pmedia video { display: block; width: 100%; max-height: 420px; object-fit: cover; }
+  .doc-cap { font-size: 12px; color: var(--muted); padding: 6px 2px 0; }
+  .comment { display: flex; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .bubble { background: var(--wait-bg); border-radius: 0 10px 10px 10px; padding: 8px 10px; min-width: 0; }
+  .bubble b { font-size: 13px; }
+  .bubble p { margin: 2px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+  .tweet { display: flex; gap: 10px; }
+  .tweet + .tweet { border-top: 1px solid var(--line); padding-top: 10px; }
+  .tweet .body { min-width: 0; display: grid; gap: 6px; }
+  .tweet small { color: var(--muted); }
+  .draft { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+  .hint { font-size: 12px; color: var(--muted); margin: 0; }
+  .empty-lv { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 6px; font-size: 14px; }
+  .empty-lv code { font-size: 12px; background: var(--wait-bg); padding: 1px 5px; border-radius: 4px; }
+
+  /* Decision column */
+  .pill { justify-self: start; border-radius: 99px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+  .pill.waiting { background: var(--wait-bg); color: var(--muted); }
+  .pill.approved { background: var(--ok-bg); color: var(--ok); }
+  .pill.missed { background: var(--warn-bg); color: var(--warn); }
+  h1 { font: 800 22px/1.2 var(--display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+  .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .num { font: 800 15px/1 var(--body); font-variant-numeric: tabular-nums; }
+  .alert { border-radius: 8px; padding: 9px 11px; font-size: 13px; }
+  .alert.warn { background: var(--warn-bg); color: var(--warn); }
+  .alert.bad { background: var(--bad-bg); color: var(--bad); }
+  .alert.ok { background: var(--ok-bg); color: var(--ok); }
+  .primary { border: 0; border-radius: 8px; padding: 12px 16px; background: var(--cyan); color: #002138; font-weight: 800; font-size: 15px; }
+  .secondary { border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; background: var(--surface); font-weight: 600; font-size: 14px; }
+  .textbtn { border: 0; background: none; padding: 0; color: var(--link); font-size: 13px; justify-self: start; text-decoration: underline; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .move { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; }
+  .move label { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+  .move input { font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--surface); color: var(--ink); min-width: 0; }
+  details { border-top: 1px solid var(--line); padding-top: 10px; font-size: 13px; }
+  summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+  details pre { white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.5 var(--body); color: var(--muted); margin: 8px 0 0; }
+
+  /* Editing the copy in place (saved to the Notion row) */
+  .editor { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .editor label { font-size: 13px; font-weight: 600; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .editor label span { font-weight: 400; font-variant-numeric: tabular-nums; }
+  .editor textarea { font: 14px/1.5 var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; resize: vertical; width: 100%; box-sizing: border-box; }
+  .editor textarea:focus-visible { outline: 2px solid var(--cyan); outline-offset: 0; }
+  .editor .over { color: var(--bad); }
+  .editor .pair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; }
+
+  .dock { display: none; }
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--navy); color: var(--on-navy); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 20; box-shadow: 0 6px 24px rgba(0,0,0,.25); max-width: calc(100% - 32px); }
+
+  @media (max-width: 1080px) {
+    .desk { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-areas: "head head" "preview creative" "preview decide"; grid-template-rows: auto auto 1fr; }
+  }
+  @media (max-width: 720px) {
+    main { padding-block: 14px 110px; }
+    .desk { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "preview" "creative" "decide"; grid-template-rows: none; }
+    .count { display: none; }
+    .feed { padding: 8px; }
+    .dock { display: grid; grid-template-columns: 1fr 1.6fr; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line);
+      padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+    .decide .primary, .decide .pair { display: none; }
+    .toast { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .desk.enter { animation: rise .25s ease-out; }
+    @keyframes rise { from { transform: translateY(6px); } to { transform: none; } }
+  }
+</style>
+
+<header class="bar">
+  <div class="bar-in gutter">
+    <span class="brand">Post <span>Desk</span></span>
+    <nav class="chips" id="chips" aria-label="Posts in the queue"></nav>
+    <span class="count" id="count"></span>
+  </div>
+</header>
+
+<main class="gutter">
+  <section class="state" id="state">
+    <h2>Loading your calendar from Notion</h2>
+    <p>The queue, the copy and the slides for every post that hasn't gone out yet.</p>
+  </section>
+
+  <section class="desk" id="desk" hidden>
+    <div class="head">
+      <span class="pill" id="pill"></span>
+      <h1 id="title"></h1>
+      <dl class="facts" id="facts"></dl>
+      <div id="alerts" style="display:grid;gap:8px"></div>
+    </div>
+
+    <div class="preview">
+      <div class="toolbar">
+        <div class="seg" id="platforms" role="group" aria-label="Platform">
+          <button type="button" data-p="linkedin">LinkedIn</button>
+          <button type="button" data-p="facebook">Facebook</button>
+          <button type="button" data-p="x">X</button>
+          <button type="button" data-p="threads">Threads</button>
+        </div>
+        <div class="seg" id="langs" role="group" aria-label="Language">
+          <button type="button" data-l="en">EN</button>
+          <button type="button" data-l="lv">LV</button>
+        </div>
+        <button type="button" class="secondary" id="edit-text">Edit text</button>
+      </div>
+      <div class="feed" id="feed"></div>
+      <form class="editor" id="editor" hidden>
+        <label for="ed-post">Post <span id="ed-count"></span></label>
+        <textarea id="ed-post" rows="16" spellcheck="true"></textarea>
+        <label for="ed-comment">First comment</label>
+        <textarea id="ed-comment" rows="5" spellcheck="true"></textarea>
+        <p class="hint" id="ed-note"></p>
+        <div class="pair">
+          <button type="submit" class="primary" id="ed-save">Save to Notion</button>
+          <button type="button" class="secondary" id="ed-cancel">Cancel</button>
+        </div>
+      </form>
+      <p class="hint" id="feed-hint"></p>
+    </div>
+
+    <div class="creative">
+      <span class="label" id="media-label">Creative</span>
+      <figure class="media" id="media"></figure>
+      <div class="links" id="media-links"></div>
+    </div>
+
+    <div class="decide">
+      <button type="button" class="primary" id="approve">Approve</button>
+      <button type="button" class="textbtn" id="unapprove" hidden>Take back approval</button>
+      <div class="pair">
+        <button type="button" class="secondary" id="prev">← Previous</button>
+        <button type="button" class="secondary" id="next">Next →</button>
+      </div>
+      <div class="move">
+        <label for="move-date">Move to another day</label>
+        <input type="date" id="move-date">
+        <button type="button" class="secondary" id="move-save">Save date</button>
+      </div>
+      <p class="hint" id="move-note"></p>
+      <a id="edit" href="#" target="_blank" rel="noopener">Edit the text in Notion ↗</a>
+      <details id="notes-box">
+        <summary>Jev score and production notes</summary>
+        <pre id="notes"></pre>
+      </details>
+    </div>
+  </section>
+</main>
+
+<div class="dock" id="dock">
+  <button type="button" class="secondary" id="dock-next">Next →</button>
+  <button type="button" class="primary" id="dock-approve">Approve</button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="core.js"></script>
+<script>
+(() => {
+  const D = window.Desk;
+  const NOTION = "Notion";
+  // The Content Calendar view: Day Type set, not archived, sorted by date.
+  const VIEW = { data: { mode: "view", view_url: "https://www.notion.so/f38ecaef046f838898ae01b7a0e83684?v=3b6ecaef046f81b6b588000c4f0c6120", page_size: 100 } };
+  const $ = (id) => document.getElementById(id);
+
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+
+  // edit: the open editor, { url, lang, post, comment }, or null.
+  const S = { mcp: null, rows: [], queue: [], url: null, pages: {}, platform: store.get("desk.platform") || "linkedin", lang: "en", expanded: false, busy: false, loaded: false, edit: null };
+
+  function rigaNow() {
+    const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Riga", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23" })
+      .formatToParts(new Date()).map((x) => [x.type, x.value]));
+    return { iso: `${p.year}-${p.month}-${p.day}`, hour: Number(p.hour) };
+  }
+  const today = () => rigaNow().iso;
+
+  function el(tag, attrs = {}, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    for (const c of kids.flat()) if (c != null && c !== false) n.append(c.nodeType ? c : document.createTextNode(c));
+    return n;
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 3200);
+  }
+
+  const cur = () => S.queue.find((r) => r.url === S.url) || null;
+  const idx = () => S.queue.findIndex((r) => r.url === S.url);
+
+  // ---- page-level states -------------------------------------------------
+  function showState(title, text, button) {
+    $("desk").hidden = true; $("dock").hidden = true;
+    const s = $("state"); s.hidden = false; s.replaceChildren(el("h2", { text: title }), el("p", { text }));
+    if (button) s.append(el("button", { class: "primary", type: "button", onclick: button.run, text: button.label }));
+  }
+
+  const READ_FIX = {
+    needs_reauth: ["Your Notion connection has expired", "Reconnect Notion in claude.ai Settings → Connectors, then reload this page."],
+    server_not_connected: ["Notion isn't connected", "Add Notion in claude.ai Settings → Connectors, then reload this page."],
+    selection_required: ["Choose which Notion to use", "You have more than one Notion connection. Pick one when claude.ai asks, then reload this page."],
+    not_in_manifest: ["Notion is turned off for this page", "Turn Notion back on from this page's Permissions menu, then reload."],
+    blocked_by_policy: ["Your organisation blocks this", "An admin policy stops this page from reading Notion."],
+    not_granted: ["Notion isn't available here", "Open this page on claude.ai to load your calendar."],
+    capability_disabled: ["Notion isn't available here", "Open this page on claude.ai to load your calendar."],
+  };
+
+  function onReadError(e) {
+    const code = e && e.code;
+    if (S.loaded && (code === "server_unavailable" || code === "upstream_error" || code === "rate_limited")) {
+      $("feed-hint").textContent = "Couldn't refresh from Notion just now. Showing what loaded last.";
+      return;
+    }
+    if (code === "approval_required") {
+      showState("Allow this page to read Notion", "It reads your posting calendar, and writes only when you press Approve, Take back or Save date.",
+        { label: "Allow Notion", run: () => S.mcp.callTool(NOTION, "notion-query-data-sources", VIEW).then((r) => onRows(r), onReadError) });
+      return;
+    }
+    const fix = READ_FIX[code];
+    if (fix) { S.rows = []; S.queue = []; renderChips(); showState(fix[0], fix[1]); return; }
+    showState("Notion didn't answer", (e && e.message) || "Something went wrong while loading the calendar.",
+      { label: "Try again", run: () => { showState("Loading your calendar from Notion", "One moment."); S.mcp.invalidate(NOTION, "notion-query-data-sources").catch(() => {}); watch(); } });
+  }
+
+  // ---- data --------------------------------------------------------------
+  function onRows(result) {
+    const p = result && result.payload;
+    const rows = (p && p.results) || [];
+    S.rows = rows; S.loaded = true;
+    rebuild();
+    if (!S.queue.length) {
+      renderChips();
+      showState("Nothing waiting", "Every post in the calendar has gone out. The next batch shows up here as soon as it's in Notion.");
+      return;
+    }
+    if (!cur()) S.url = firstToReview();
+    $("feed-hint").textContent = "";
+    render(true);
+  }
+
+  function rebuild() { S.queue = D.toQueue(S.rows, today()); }
+
+  function firstToReview() {
+    const t = today();
+    const r = S.queue.find((x) => x.status === "waiting" && x.date >= t) || S.queue.find((x) => x.status !== "approved") || S.queue[0];
+    return r && r.url;
+  }
+  function nextToReview(fromUrl) {
+    const i = S.queue.findIndex((r) => r.url === fromUrl);
+    const after = S.queue.slice(i + 1).concat(S.queue.slice(0, i));
+    const r = after.find((x) => x.status !== "approved");
+    return r ? r.url : fromUrl;
+  }
+
+  let unwatch = null;
+  function watch() {
+    if (unwatch) unwatch();
+    unwatch = S.mcp.watchTool(NOTION, "notion-query-data-sources", VIEW, (ev) => {
+      if (ev.type === "data") onRows(ev.result);
+      else onReadError(ev.error);
+    }, { cache: { staleTime: 30000, gcTime: 600000 }, refetchInterval: 120000 });
+  }
+
+  // fresh: skip the cache, after this page wrote to the row.
+  async function loadPage(url, fresh) {
+    if (!url || (S.pages[url] && !fresh)) return S.pages[url];
+    if (!S.pages[url]) S.pages[url] = { loading: true };
+    try {
+      const r = await S.mcp.callTool(NOTION, "notion-fetch", { id: url }, fresh ? { cache: false } : { cache: { staleTime: 60000, gcTime: 600000 } });
+      const p = r.payload;
+      const text = typeof p === "string" ? p : (p && p.text) || (r.content || []).map((c) => c.text || "").join("\n");
+      S.pages[url] = D.parsePage(text);
+    } catch (e) {
+      S.pages[url] = { error: e };
+    }
+    if (url === S.url) render();
+    return S.pages[url];
+  }
+
+  // ---- writes (only ever from a click) -------------------------------------
+  const WRITE_FIX = {
+    approval_required: "Notion needs your OK first. Press the button again and choose Allow.",
+    not_in_manifest: "This page isn't allowed to change Notion. Turn Notion on from the page's Permissions menu.",
+    needs_reauth: "Your Notion connection has expired. Reconnect it in claude.ai Settings → Connectors.",
+    server_not_connected: "Notion isn't connected. Add it in claude.ai Settings → Connectors.",
+    blocked_by_policy: "An admin policy stops this page from changing Notion.",
+    tool_error: "Notion refused the change. Open the row in Notion to check it.",
+  };
+
+  async function write(properties, done) {
+    const r = cur();
+    if (!r || S.busy) return;
+    S.busy = true; renderActions();
+    try {
+      await S.mcp.callTool(NOTION, "notion-update-page", { page_id: r.url, command: "update_properties", properties }, { cache: false });
+      Object.assign(r.raw, properties);
+      rebuild();
+      done(r);
+    } catch (e) {
+      toast(WRITE_FIX[e && e.code] || "Notion didn't confirm the change. Reloading the calendar to see what was saved.");
+    } finally {
+      S.busy = false;
+      S.mcp.invalidate(NOTION, "notion-query-data-sources").catch(() => {});
+      render();
+    }
+  }
+
+  // ---- editing the copy ------------------------------------------------------
+  // The editor writes the Notion row's own sections (FINAL POST / FIRST COMMENT, or their LV twins) with a
+  // search-and-replace of the exact text it loaded. If someone changed that text in Notion meanwhile, nothing
+  // matches and Notion refuses, instead of this page silently overwriting their edit.
+  const KEYS = { en: ["FINAL POST", "FIRST COMMENT"], lv: ["FINAL POST LV", "FIRST COMMENT LV"] };
+  const LIMIT = { en: 3000, lv: 2200 };     // LinkedIn post; Instagram caption, where the Latvian posts go
+  const editsNow = () => {
+    const [kp, kc] = KEYS[S.edit.lang];
+    return { [kp]: $("ed-post").value, [kc]: $("ed-comment").value };
+  };
+  const editDirty = () => !!S.edit && !!S.pages[S.edit.url]?.raw && D.textUpdates(S.pages[S.edit.url], editsNow()).length > 0;
+  // An open editor with changes blocks leaving it; a clean one just closes.
+  function leaveEdit() {
+    if (!S.edit) return true;
+    if (editDirty()) { toast("Save or cancel your edit first."); $("ed-post").focus(); return false; }
+    S.edit = null;
+    return true;
+  }
+
+  function startEdit() {
+    const r = cur(), pg = r && S.pages[r.url];
+    if (!pg || pg.loading || pg.error) return;
+    const [kp, kc] = KEYS[S.lang];
+    if (!pg.raw[kp]) { toast(`This row has no ${kp} section to edit. Add it in Notion first.`); return; }
+    S.edit = { url: r.url, lang: S.lang };
+    const lv = S.lang === "lv";
+    $("ed-post").value = lv ? pg.postLv : pg.post;
+    $("ed-comment").value = lv ? pg.commentLv : pg.comment;
+    $("ed-comment").disabled = !pg.raw[kc];
+    for (const id of ["ed-post", "ed-comment"]) $(id).lang = S.lang;
+    render();
+    $("ed-post").focus();
+  }
+
+  function renderEditor(r) {
+    const open = !!S.edit && S.edit.url === r.url;
+    $("editor").hidden = !open; $("feed").hidden = open; $("edit-text").hidden = open;
+    const pg = S.pages[r.url];
+    $("edit-text").disabled = !pg || !pg.raw || S.busy;
+    if (!open) return;
+    const n = $("ed-post").value.trim().length, max = LIMIT[S.edit.lang];
+    const c = $("ed-count"); c.textContent = `${n.toLocaleString("en")} / ${max.toLocaleString("en")} characters`; c.className = n > max ? "over" : "";
+    $("ed-note").textContent = `Saves the ${S.edit.lang === "lv" ? "Latvian" : "English"} text of this row in Notion.` +
+      (r.status === "approved" ? ` It's approved, so the 08:00 run on ${D.fmtDate(r.date)} sends whatever is saved by then.` : "") +
+      " ⌘↵ saves.";
+    $("feed-hint").textContent = "";
+  }
+
+  async function saveEdit(e) {
+    e.preventDefault();
+    const ed = S.edit;
+    if (!ed || S.busy) return;
+    const ups = D.textUpdates(S.pages[ed.url], editsNow());
+    if (!ups.length) { S.edit = null; toast("Nothing changed."); render(); return; }
+    S.busy = true; renderActions();
+    const btn = $("ed-save"); btn.textContent = "Saving…"; btn.disabled = true;
+    try {
+      const res = await S.mcp.callTool(NOTION, "notion-update-page", { page_id: ed.url, command: "update_content", content_updates: ups, allow_async: false }, { cache: false });
+      const warn = res && res.payload && res.payload.warnings;
+      S.edit = null;
+      toast(warn && warn.length ? "Saved, but part of it didn't match Notion's copy. Open the row in Notion to check." : "Saved to Notion.");
+      await loadPage(ed.url, true);
+    } catch (err) {
+      const code = err && err.code;
+      if (code === "tool_error") {
+        // Most likely the text changed in Notion. Reload it so a second Save replaces it on purpose.
+        toast("This text changed in Notion since you opened it. Save again to replace it with yours, or Cancel to keep Notion's.");
+        loadPage(ed.url, true);
+      } else toast(WRITE_FIX[code] || "Notion didn't confirm the save. Your text is still here; try again.");
+    } finally {
+      S.busy = false; btn.textContent = "Save to Notion"; btn.disabled = false;
+      render();
+    }
+  }
+
+  function approve(yes) {
+    if (S.edit) { toast("Save or cancel your edit first, then approve."); return; }
+    write({ Approved: yes ? "__YES__" : "__NO__" }, (r) => {
+      if (!yes) { toast(`Approval taken back. ${D.shortName(r.name)} won't go out.`); return; }
+      const when = r.date < today() ? `at the next run, ${D.fmtDate(D.nextRun(rigaNow()))}` : `on ${D.fmtDate(r.date)}`;
+      toast(`Approved. ${D.shortName(r.name)} goes out ${when}.`);
+      const next = nextToReview(r.url);
+      if (next !== r.url) setTimeout(() => go(next), 900);
+    });
+  }
+
+  function moveDate() {
+    const r = cur();
+    const iso = $("move-date").value;
+    if (!r || !iso || iso === r.date) return;
+    const props = { "date:Date:start": iso, "date:Date:is_datetime": 0 };
+    const renamed = D.renameForDate(r.name, iso);
+    if (renamed !== r.name) props.Name = renamed;
+    write(props, (row) => toast(`${D.shortName(row.name)} moved to ${D.fmtDate(iso)}.`));
+  }
+
+  // ---- rendering -----------------------------------------------------------
+  function go(url) {
+    if (!url || url === S.url || !leaveEdit()) return;
+    S.url = url; S.expanded = false;
+    render(true);
+    const c = $("chips").querySelector(`[data-url="${CSS.escape(url)}"]`);
+    if (c) c.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+
+  function renderChips() {
+    const approved = S.queue.filter((r) => r.status === "approved").length;
+    $("count").textContent = S.queue.length ? `${approved} of ${S.queue.length} approved` : "";
+    $("chips").replaceChildren(...S.queue.map((r) =>
+      el("button", { type: "button", class: "chip" + (r.clash.length ? " clash" : ""), "data-url": r.url, "aria-current": r.url === S.url ? "true" : "false",
+        title: `${D.fmtDate(r.date)} · ${D.longName(r.name)} · ${r.status}`, onclick: () => go(r.url) },
+        el("span", { class: "dot " + r.status }), `${D.fmtDate(r.date)} · ${D.shortName(r.name)}`)));
+  }
+
+  const BAND = (n) => (n >= 80 ? "strong" : n >= 60 ? "good" : n >= 45 ? "weak" : "poor");
+  const STATUS_TEXT = { waiting: "Waiting for you", approved: "Approved", missed: "Date passed, not approved" };
+
+  function render(enter) {
+    const r = cur();
+    if (!r) return;
+    $("state").hidden = true; $("desk").hidden = false; $("dock").hidden = false;
+    const desk = $("desk");
+    if (enter) { desk.classList.remove("enter"); void desk.offsetWidth; desk.classList.add("enter"); }
+    renderChips();
+    const page = S.pages[r.url];
+    if (!page) loadPage(r.url);
+    const nx = S.queue[idx() + 1];
+    if (nx && !S.pages[nx.url]) loadPage(nx.url);
+    const pg = page && !page.loading && !page.error ? page : null;
+
+    // Head
+    const pill = $("pill"); pill.className = "pill " + r.status; pill.textContent = STATUS_TEXT[r.status] || r.status;
+    $("title").textContent = D.longName(r.name);
+    const slot = D.slotFrom(r.notes);
+    const kw = pg && D.keywordFrom(S.lang === "lv" ? pg.postLv : pg.post);
+    const facts = [
+      ["Goes out", r.date ? `${D.fmtDate(r.date)}${slot ? ", " + slot : ""}` : "No date set"],
+      ["Jev", r.jev != null ? el("span", {}, el("span", { class: "num", text: String(r.jev) }), ` · ${BAND(r.jev)}`) : "Not scored yet"],
+      kw ? ["Keyword", kw] : null,
+      ["Type", r.dayType === "Lead Magnet" ? "Lead magnet post" : r.dayType === "Free Value" ? "Opinion / free value" : r.dayType || "Post"],
+      pg && pg.magnet ? ["Article", el("a", { href: pg.magnet, target: "_blank", rel: "noopener", text: pg.magnet.replace(/^https?:\/\//, "") + " ↗" })] : null,
+    ].filter(Boolean);
+    $("facts").replaceChildren(...facts.flatMap(([k, v]) => [el("dt", { text: k }), el("dd", {}, v)]));
+
+    const alerts = [];
+    const now = rigaNow();
+    if (r.status === "missed") alerts.push(["warn", `This date has passed. Approve it now and it goes out at the next run, ${D.fmtDate(D.nextRun(now))} morning. Or move it to a new day first.`]);
+    if (r.clash.length) alerts.push(["bad", `${D.fmtDate(r.date)} also has ${r.clash.join(" and ")}. If both are approved, both go out that morning.`]);
+    if (r.date && D.weekday(r.date) === 0) alerts.push(["warn", "Nothing runs on Sundays, so this won't go out. Move it to another day."]);
+    if (r.status === "approved" && r.date >= now.iso) alerts.push(["ok", `The 08:00 run on ${D.fmtDate(r.date)} checks it with Jev and hands it to Zernio.`]);
+    if (page && page.error) alerts.push(["bad", "Couldn't load this post's text from Notion. Open it in Notion to read it."]);
+    $("alerts").replaceChildren(...alerts.map(([k, t]) => el("div", { class: "alert " + k, text: t })));
+
+    renderPreview(r, pg, page);
+    renderEditor(r);
+    renderMedia(pg);
+    renderActions();
+
+    $("edit").href = r.url;
+    $("move-date").value = r.date || "";
+    $("move-note").textContent = r.status === "approved" ? "Moving keeps the approval. It goes out on the new day." : "";
+    $("notes").textContent = [r.jevNotes && "JEV\n" + r.jevNotes, r.notes && "PRODUCTION NOTES\n" + r.notes.replace(/<br\s*\/?>/g, "\n")].filter(Boolean).join("\n\n") || "No notes on this row.";
+  }
+
+  function renderActions() {
+    const r = cur();
+    if (!r) return;
+    const label = S.busy ? "Saving…" : r.status === "approved" ? "Approved ✓" : "Approve";
+    for (const id of ["approve", "dock-approve"]) { const b = $(id); b.textContent = label; b.disabled = S.busy || r.status === "approved"; }
+    $("unapprove").hidden = r.status !== "approved"; $("unapprove").disabled = S.busy;
+    $("move-save").disabled = S.busy;
+    const i = idx();
+    $("prev").disabled = i <= 0;
+    $("next").disabled = $("dock-next").disabled = i >= S.queue.length - 1;
+  }
+
+  // The creative for the language on screen: the Latvian carousel or video when the row has one, else the English.
+  function creative(pg) {
+    if (!pg) return null;
+    if (S.lang === "lv" && (pg.carouselLv || pg.videoLv)) return { carousel: pg.carouselLv, video: pg.videoLv, lv: true, slides: pg.slidesLv };
+    return { carousel: pg.carousel, video: pg.video, lv: false, slides: [] };
+  }
+
+  function mediaNode(pg, compact) {
+    pg = creative(pg);
+    if (!pg) return null;
+    const v = D.videoPath(pg.video), c = D.coverPath(pg.carousel);
+    if (v) return el("video", { src: v, controls: true, playsinline: true, muted: true, preload: "metadata", poster: c || null, onerror: (e) => e.target.replaceWith(fallback(pg)) });
+    if (c) return el("img", { src: c, alt: `First slide of the carousel`, loading: compact ? "lazy" : null, onerror: (e) => e.target.replaceWith(fallback(pg)) });
+    return null;
+  }
+  function fallback(pg) {
+    const href = pg.video || pg.carousel;
+    return el("div", { class: "fallback" }, el("b", { text: "No preview stored with this page" }),
+      href ? el("a", { href, target: "_blank", rel: "noopener", text: "Open the file ↗" }) : "This post has no carousel or video.");
+  }
+
+  function renderMedia(page) {
+    const fig = $("media");
+    const node = mediaNode(page);
+    const pg = creative(page);
+    fig.className = "media" + (pg && !pg.video ? " square" : "");
+    fig.replaceChildren(node || el("div", { class: "fallback" }, el("b", { text: pg ? "No carousel or video" : "Loading…" }), pg ? "This one goes out as text only." : ""));
+    const lv = pg && pg.lv ? "Latvian " : "";
+    $("media-label").textContent = pg && pg.video ? `${lv}video · goes out instead of the slides` : pg && pg.carousel ? `${lv}carousel · slide 1` : "Creative";
+    if (pg && S.lang === "lv" && !pg.lv && (pg.video || pg.carousel)) $("media-label").textContent += " · English, no Latvian version yet";
+    const links = [];
+    if (pg && pg.carousel) links.push(el("a", { href: pg.carousel, target: "_blank", rel: "noopener", text: "All slides (PDF) ↗" }));
+    if (pg && pg.slides.length) links.push(el("a", { href: pg.slides[0], target: "_blank", rel: "noopener", text: `${pg.slides.length} slide images for Instagram ↗` }));
+    if (pg && pg.video) links.push(el("a", { href: pg.video, target: "_blank", rel: "noopener", text: "Video file ↗" }));
+    $("media-links").replaceChildren(...links);
+  }
+
+  function who(r, slot) {
+    return el("div", { class: "who" }, el("span", { class: "avatar", text: "RZ" }),
+      el("div", {}, el("b", { text: "Rihards Zeila" }), el("small", { text: `${D.fmtDate(r.date)}${slot ? " · " + slot : ""}` })));
+  }
+
+  function foldedText(text, f, moreLabel) {
+    const out = el("p", { class: "text" });
+    if (!f.cut || S.expanded) { out.textContent = text; return out; }
+    out.append(f.shown + "… ", el("button", { type: "button", class: "more", text: moreLabel, onclick: () => { S.expanded = true; render(); } }));
+    return out;
+  }
+
+  function renderPreview(r, pg, page) {
+    for (const b of $("platforms").children) b.setAttribute("aria-pressed", b.dataset.p === S.platform ? "true" : "false");
+    for (const b of $("langs").children) b.setAttribute("aria-pressed", b.dataset.l === S.lang ? "true" : "false");
+    const feed = $("feed");
+    const slot = D.slotFrom(r.notes);
+    if (!pg) {
+      feed.replaceChildren(el("div", { class: "post" }, el("p", { class: "hint", text: page && page.error ? "The text didn't load." : "Loading the text from Notion…" })));
+      $("feed-hint").textContent = "";
+      return;
+    }
+    const post = S.lang === "lv" ? pg.postLv : pg.post;
+    const comment = S.lang === "lv" ? pg.commentLv : pg.comment;
+    if (!post) {
+      feed.replaceChildren(el("div", { class: "empty-lv" },
+        el("b", { text: S.lang === "lv" ? "No Latvian version of this post yet" : "This row has no FINAL POST section" }),
+        S.lang === "lv"
+          ? el("span", {}, "Add a ", el("code", { text: "=== FINAL POST LV ===" }), " section (and ", el("code", { text: "=== FIRST COMMENT LV ===" }), ") to the Notion page and it shows here next to the English. Latvian posting is switched off in the pipeline, so nothing Latvian goes out yet.")
+          : "The packager posts nothing without it. Add the text in Notion."));
+      $("feed-hint").textContent = "";
+      return;
+    }
+    const media = () => { const m = mediaNode(pg, true); return m ? el("div", { class: "pmedia" }, m) : null; };
+    let nodes = [], hint = "";
+
+    if (S.platform === "linkedin" || S.platform === "facebook") {
+      const li = S.platform === "linkedin";
+      const f = li ? D.linkedinFold(post) : D.facebookFold(post);
+      const m = media();
+      nodes.push(el("article", { class: "post" }, who(r, slot), foldedText(post, f, li ? "see more" : "See more"),
+        m, m && !creative(pg).video && creative(pg).carousel && li ? el("div", { class: "doc-cap", text: "Document · swipe through the slides" }) : null,
+        comment ? el("div", { class: "comment" }, el("span", { class: "avatar sm", text: "RZ" }),
+          el("div", { class: "bubble" }, el("b", { text: "Rihards Zeila · first comment" }), el("p", { text: comment }))) : null));
+      hint = li ? "The cut is about where LinkedIn's \"…see more\" falls on a laptop. On a phone it comes a little earlier."
+        : "Zernio posts a copy to Facebook in the same slot, with the cover image (or the video).";
+    } else {
+      const max = S.platform === "x" ? 280 : 500;
+      const parts = D.thread(post, max);
+      nodes.push(el("div", { class: "draft", text: "Lookalike. Claude Haiku writes the real thread from the post three hours after LinkedIn, so nobody sees the exact text before it goes out." }));
+      nodes.push(el("article", { class: "post " + S.platform }, parts.map((t, i) => el("div", { class: "tweet" }, el("span", { class: "avatar sm", text: "RZ" }),
+        el("div", { class: "body" }, el("small", {}, el("b", { text: "Rihards Zeila" }), S.platform === "x" ? " @rihardszeila" : ""), el("p", { class: "text", text: t }), i === 0 ? media() : null)))));
+      hint = `${parts.length} ${parts.length === 1 ? "post" : "posts"}, each under ${max} characters.`;
+    }
+    feed.replaceChildren(...nodes);
+    $("feed-hint").textContent = hint;
+  }
+
+  // ---- wiring --------------------------------------------------------------
+  $("platforms").addEventListener("click", (e) => { const p = e.target.closest("button")?.dataset.p; if (p && leaveEdit()) { S.platform = p; S.expanded = false; store.set("desk.platform", p); render(); } });
+  $("langs").addEventListener("click", (e) => { const l = e.target.closest("button")?.dataset.l; if (l && l !== S.lang && leaveEdit()) { S.lang = l; S.expanded = false; render(); } });
+  $("edit-text").onclick = startEdit;
+  $("editor").addEventListener("submit", saveEdit);
+  $("ed-cancel").onclick = () => { S.edit = null; render(); };
+  $("ed-post").addEventListener("input", () => { const r = cur(); if (r) renderEditor(r); });
+  $("editor").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); $("editor").requestSubmit(); } });
+  $("approve").onclick = $("dock-approve").onclick = () => approve(true);
+  $("unapprove").onclick = () => approve(false);
+  $("prev").onclick = () => go(S.queue[idx() - 1]?.url);
+  $("next").onclick = $("dock-next").onclick = () => go(S.queue[idx() + 1]?.url);
+  $("move-save").onclick = moveDate;
+  document.addEventListener("keydown", (e) => {
+    if (e.target.closest("input, textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === "ArrowRight") go(S.queue[idx() + 1]?.url);
+    if (e.key === "ArrowLeft") go(S.queue[idx() - 1]?.url);
+  });
+
+  // ---- boot ----------------------------------------------------------------
+  const use = window.claude && window.claude.use ? window.claude.use("mcp") : Promise.resolve(null);
+  use.then((mcp) => {
+    if (!mcp) { showState("Open this on claude.ai", "Post Desk reads your posting calendar through your Notion connector, so it only works inside claude.ai."); return; }
+    S.mcp = mcp;
+    watch();
+  }, () => showState("Open this on claude.ai", "Post Desk reads your posting calendar through your Notion connector, so it only works inside claude.ai."));
+})();
+</script>
+
+</body></html>

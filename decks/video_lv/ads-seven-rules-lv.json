@@ -1,0 +1,125 @@
+{
+  "_source": "Latvian version of Marketinga SKola social/motion/specs/ads.json (2 Nov 2026). Every number is in the META guide and the English ADS kit.",
+  "template": "tiles",
+  "theme": "light",
+  "keyword": "META",
+  "decimalComma": true,
+  "ruleLabel": "NOTEIKUMS",
+  "hook": {
+    "line": "Claude vada manas Meta reklāmas",
+    "sub": "Viena kampaņa. Septiņi noteikumi. Katru rītu."
+  },
+  "eyebrow": "10:22 · KATRU RĪTU",
+  "statements": [
+    [
+      "Tas",
+      "nenogurst."
+    ],
+    [
+      "Tas nezaudē",
+      "interesi."
+    ],
+    [
+      "Tas nekļūst",
+      "pārāk optimistisks."
+    ],
+    [
+      "Tas vienkārši",
+      "ievēro noteikumus."
+    ]
+  ],
+  "rules": [
+    "Vērtē pēc īstiem pasūtījumiem, nevis pēc Meta datiem.",
+    "Learning fāzē neaiztiec. Budžetu maini lēnām.",
+    "Vājas reklāmas aptur pēc noteikuma, nevis noskaņojuma.",
+    "Nolietojumu aizstāj ar vienu skaidru testu.",
+    "Avārijas slēdzis. Tad paziņo cilvēkam.",
+    "Noteikumi, kurus tas nevar apiet.",
+    "Tikai pilnas dienas. Pārbaudi katru izmaiņu. Pieraksti."
+  ],
+  "cards": [
+    {
+      "type": "clock",
+      "time": "10:22",
+      "label": "10:22 KATRU DIENU"
+    },
+    {
+      "type": "serif",
+      "big": "7",
+      "note": "noteikumi. Katru rītu.",
+      "tone": "light"
+    },
+    {
+      "type": "bars",
+      "lab": "PATIESAIS ROAS · 7 DIENAS"
+    },
+    {
+      "type": "stat",
+      "prefix": "+",
+      "value": 20,
+      "unit": " %",
+      "note": "lielākā budžeta izmaiņa, ko tas drīkst veikt",
+      "tone": "light"
+    },
+    {
+      "type": "stat",
+      "lab": "META UZRĀDA PĀRĀK DAUDZ PIRKUMU",
+      "value": 20,
+      "unit": " %",
+      "note": "tāpēc tas vērtē tikai īstos pasūtījumus"
+    },
+    {
+      "type": "rows",
+      "lab": "NOTEIKUMS 3",
+      "rows": [
+        "TĒRIŅI   40 $",
+        "PIRKUMI  0"
+      ],
+      "chip": "REKLĀMA APTURĒTA"
+    },
+    {
+      "type": "log",
+      "lab": "DARBA ŽURNĀLS",
+      "lines": [
+        "09:00  ROAS nosūtīts",
+        "10:22  noteikumi pārbaudīti",
+        "10:23  budžets nemainīts",
+        "10:24  ieraksts žurnālā"
+      ]
+    },
+    {
+      "type": "checks",
+      "lab": "PĀRBAUDĪTIE NOTEIKUMI",
+      "total": 7
+    },
+    {
+      "type": "gauge",
+      "lab": "BIEŽUMS",
+      "value": 2.5,
+      "max": 4,
+      "note": "→ viens jauns tests"
+    },
+    {
+      "type": "toggle",
+      "lab": "AVĀRIJAS SLĒDZIS",
+      "note": "nostrādā pēc 350 $, ja īstais CPA ir par augstu"
+    },
+    {
+      "type": "stat",
+      "value": 70,
+      "unit": " $",
+      "note": "dienā. Apzināti maz.",
+      "tone": "light"
+    },
+    {
+      "type": "text",
+      "big": "4-8",
+      "note": "aktīvas reklāmas, pēdējo labi strādājošo nekad neaptur"
+    }
+  ],
+  "wall": [
+    "Septiņi noteikumi.",
+    "Viens prompts."
+  ],
+  "cta": "Komentē „META” un saņem visu promptu"
+}
