@@ -138,3 +138,15 @@ The packager scores the FINAL POST with Jev (TypeSafe System One) against ladder
 ## 15. Secrets never travel through chat or a workflow payload (12 Oct)
 
 Service-role keys, database passwords and bearer tokens that appeared in earlier chat history or sit hardcoded in old workflow versions are treated as compromised until rotated; no session restates one, pastes one into an `update_workflow` payload, or copies one into a doc. A workflow that needs a secret gets an n8n credential, not a string. The list of what to move and rotate is item 9 of `post-generator-approval-runbook.md`; the Supabase side (which project is which, and the one that must never be deleted) is in `supabase-project-inventory.md`.
+
+## 16. Every post has flavour, and the Latvian flavour is Latvian (4 Nov)
+
+Rihards, 4 Nov: "make the posts read as curiosity-driven; i.e - contrarian, funny etc. to give them flavor", and after the Latvian pass: "much better! Make a rule to apply this to all future posts". It applies to every post from now on, English and Latvian, and to the X / Threads thread, which is the post word for word.
+
+- **The hook is contrarian or funny**, and it is a true statement, not a label ("Hot take:" never appears). Examples that shipped: "Your Meta ads do not need a smarter media buyer. They need a more boring one." / "The worst day to fix your Black Friday ads is Black Friday." / "My Monday ads meeting now happens before I open my laptop. I am not invited." Rule 5 still scores it.
+- **One dry joke in the body, no more** ("Meta is an optimist", "Likes do not get a vote"). No emoji, no hype words.
+- **Every joke is built from a fact already in the row.** No new number, result, tool, client or claim to get the laugh; rule 11 applies to jokes too.
+- **The Latvian post finds its own flavour in Latvian.** Translated English punchlines did not work ("Vajag garlaicīgāku", "Mūsu ego to joprojām pārdzīvo", "Meta ir optimiste", "Laikiem balsstiesību nav"). What worked is a living Latvian saying, in its standard form, tied to a fact in the post: "Ne viss ir zelts, kas spīd" (36x ROAS), "Lēnāk brauksi, tālāk tiksi" (+20 % every three days), "Septiņreiz nomēri, vienreiz nogriez" (code that measures every line), "Uzticies, bet pārbaudi" (an AI checking an AI), "velns slēpjas sīkumos" (25 changes, 4 about AI). The English and Latvian hooks may share a fact, never a joke. The Latvian post also speaks as "mēs" for the Mārketinga Skola pages and stays 500 to 700 characters (the latvian-writing skill).
+
+Where the rule is enforced: the `latvian-writing` skill (Latvian flavour and "mēs"), `Marketinga SKola/tools/social-write-lv.mjs` (the Latvian writer prompt), and this file for every session that drafts a post.
+
