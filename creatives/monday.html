@@ -55,17 +55,17 @@
     ${header(["Claude", "Meta ads"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
     <p class="eyebrow">${T("Meta ads · every Monday", "Meta reklāmas · katru pirmdienu")}</p>
     <h1>${T(`My Monday ads meeting<em>is a <span class="hl">Claude task</span> now.</em>`,
-      `Mana pirmdienas reklāmu sapulce<em>tagad ir <span class="hl">Claude uzdevums.</span></em>`)}</h1>
+      `Mūsu pirmdienas reklāmu sapulce<em>tagad ir <span class="hl">Claude uzdevums.</span></em>`)}</h1>
     <div class="sheet">
       <div class="s-top"><b>${T("Monday review", "Pirmdienas pārskats")}</b><span class="date">${T("Mon 9 Nov", "pirmd., 9. nov.")}</span>
-        <span class="done">${mark("Claude")}${T("done before I start", "gatavs, pirms sāku darbu")}</span></div>
+        <span class="done">${mark("Claude")}${T("done before I start", "gatavs, pirms sākam darbu")}</span></div>
       <div><p class="lab">${T("Read in this order", "Rādītāju secība")}</p>
         <div class="order">${order.map((o, i) => `<span class="pill"><i>${i + 1}</i>${o}</span>`).join("")}<span class="pill no">${T("plain clicks", "visi klikšķi")}</span></div></div>
       <div><p class="lab">${T("This week's calls", "Šīs nedēļas lēmumi")}</p>
         <div class="calls">${calls.map(([a, b, c, d]) => `<div class="call"><b>${a}</b><span>${b}</span><span class="verdict ${c}">${d}</span></div>`).join("")}</div></div>
       <div class="note">
         <div class="chat"><div class="who">${mark("Claude")}Claude</div><p>${T("Paused 1, scaled 1, held 1. The landing page needs you.",
-          "Apturēju 1 reklāmu, 1 reklāmai palielināju budžetu, 1 atstāju. Tev jāpārbauda landing page.")}</p></div>
+          "Apturēju 1 reklāmu, 1 reklāmai palielināju budžetu, 1 atstāju. Jāpārbauda landing page.")}</p></div>
         <div class="ceil"><i data-lucide="lock"></i>${T("Never above my daily ceiling without asking", "Bez atļaujas nepārsniedz dienas budžetu")}</div>
       </div>
     </div>

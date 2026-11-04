@@ -2,7 +2,8 @@
 latvian?" The Latvian posts go out from the Mārketinga Skola Facebook page and Instagram, so these are the five
 carousel decks of build2.py / build_take.py rewritten in Latvian (latvian-writing rules: Tu, no dashes, 0,38 €, 20 %;
 the gpt-6-astra pass of 3 Nov applied line by line, punchlines and trade words kept),
-with marketingaskola.lv in the footer. deck2.py is untouched: DeckLV only swaps its English chrome (swipe, the gate,
+with marketingaskola.lv in the footer. They speak as "mēs" (Rihards, 4 Nov: the Mārketinga Skola
+pages say "mūsu", not "mans"). deck2.py is untouched: DeckLV only swaps its English chrome (swipe, the gate,
 the outro). Files end in -lv so they never overwrite the English ones. Run: python3 build_lv.py"""
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -71,7 +72,7 @@ class DeckLV(Deck):
         by = y - bh
         self.box(L, by, W, bh, t["dim"], r=16)
         self.tx(540, by + bh / 2, save_line, 32, W - 60, ha="center", va="center", ls=1.2, max_h=bh - 30, min_size=26)
-        h, _ = self.tx(L, 246, "Rihards Zeila · 12 gadi reklāmu pirkšanā · tagad būvēju sistēmas, kas to dara", 24, W, color=t["muted"], ls=1.25, count=False)
+        h, _ = self.tx(L, 246, "Mārketinga Skola · komandu vada Rihards Zeila, 12 gadi reklāmu pirkšanā", 24, W, color=t["muted"], ls=1.25, count=False)
         self.tx(L, 246 - h - 18, deck2.BRAND, 26, W, color=t["accent_small"], weight="bold", count=False)
 
 
@@ -108,7 +109,7 @@ done(d)
 
 # ---------------------------------------------------------------- KARUSELIS
 d = DeckLV("carousel-330-lines-lv", OUT, "navy")
-d.cover("Katru karuseli manā profilā zīmē **kods**.", "Bez Canva un dizainera palīdzības katrs karuselis top par 0 €, arī karuselis, ko Tu tagad skaties.",
+d.cover("Katru karuseli mūsu lapā zīmē **kods**.", "Bez Canva un dizainera palīdzības katrs karuselis top par 0 €, arī karuselis, ko Tu tagad skaties.",
         art=art_code_to_slide, tools=["Python", "LinkedIn", ("Canva", True)])
 d.stats([("3x", "lielāka iesaiste", "slaidiem salīdzinājumā ar teksta ierakstiem, 2026. g. septembris"),
          ("5x", "vērtīgāka par laiku", "viena saglabāšana")], kicker="kāpēc vajadzīgi karuseļi")
@@ -159,7 +160,7 @@ done(d)
 
 # ---------------------------------------------------------------- 36x pret 13x
 d = DeckLV("roas-36-13-lv", OUT, "navy")
-d.cover("Mans labākais ROAS: **36x**. Mana labākā kampaņa: **13x**.", "Tas nav viens un tas pats. Starpība starp tiem ir lielākā daļa no tā, ko zinu.",
+d.cover("Mūsu labākais ROAS: **36x**. Labākā kampaņa: **13x**.", "Tas nav viens un tas pats. Starpība starp tiem ir lielākā daļa no tā, ko esam iemācījušies.",
         art=lambda d, x, y, w, h: art_bars2(d, x, y, w, h, [("36x", 36, "1 000 € tests"), ("13x", 13, "75 000+ € mēnesī")], hot=1))
 d.stats([("36x", "1 000 € testā", "zīmolu preces, kas ar atlaidi pārdevās pašas"),
          ("13x", "ar 75 000+ € budžetu mēnesī", "vairāk nekā 1 milj. € apgrozījuma. Cits darbs")], kicker="divas kampaņas")
@@ -170,8 +171,8 @@ d.table("Tā pati prasme, bet cits darbs", ["", "36x", "13x"], [
 d.bullets("Ar 20 000 € dienas budžetu", [
     "Pircēju, kurus visvieglāk pārliecināt, līdz pusdienām vairs nav",
     "Reklāmas nolietojas katru dienu, ne reizi mēnesī",
-    "Uzvar struktūra: budžeta sadalījums, ātra izslēgšana, pirmās 48 stundas"], kicker="lielākais konts, ko vadīju")
-d.compare("Kas patiesībā mainīja rezultātu", "Mana gudrākā ideja", ["Pāris procenti", "Gadiem ticēju, ka tas ir mans darbs"],
+    "Uzvar struktūra: budžeta sadalījums, ātra izslēgšana, pirmās 48 stundas"], kicker="lielākais konts, ko vadījām")
+d.compare("Kas patiesībā mainīja rezultātu", "Mūsu gudrākā ideja", ["Pāris procenti", "Gadiem ticējām, ka tas ir mūsu darbs"],
           "Budžeta pārkārtošana", ["Desmitiem procentu", "Ne pārāk patīkami to atzīt"], kicker="tas pats konts")
 d.statement("Ja kāds Tev rāda ekrānuzņēmumu ar 30x ROAS, bet bez tēriņiem, viņš paļaujas uz to, ka Tu par tēriņiem nejautāsi.", kicker="pazīme")
 d.statement("ROAS lielākoties nosaka produkts, cena, marža un tēriņi. Griestus prasme nosaka reti.", kicker="noteikums")

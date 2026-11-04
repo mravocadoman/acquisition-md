@@ -30,14 +30,14 @@
         <span class="tag red">${T("Paused", "Apturēta")}</span></div>`),
     tile(5, T("A kill switch", "Avārijas slēdzis"), `
       <div class="alert"><i data-lucide="siren"></i><span>${T("0 sales, 3 days running", "3 dienas bez pirkumiem")}</span></div>
-      <div class="alert ok"><i data-lucide="circle-pause"></i><span>${T("Paused. I get a message.", "Kampaņa apturēta, un es saņemu ziņu")}</span></div>`, "dark"),
+      <div class="alert ok"><i data-lucide="circle-pause"></i><span>${T("Paused. I get a message.", "Kampaņa apturēta, un mēs saņemam ziņu")}</span></div>`, "dark"),
   ];
 
   document.getElementById("page").innerHTML = `
     ${header(["Claude", "Meta ads"], T("12 years buying ads", "12 gadu pieredze reklāmu pirkšanā"))}
     <p class="eyebrow">${T("Meta ads · every morning", "Meta reklāmas · katru rītu")}</p>
     <h1>${T(`Claude runs my Meta ads.<em>These are its <span class="hl">7 rules.</span></em>`,
-      `<span class="hl">7 noteikumi</span>, pēc kuriem Claude<em>vada manas Meta reklāmas.</em>`)}</h1>
+      `<span class="hl">7 noteikumi</span>, pēc kuriem Claude<em>vada mūsu Meta reklāmas.</em>`)}</h1>
     <div class="tiles">${tiles.join("")}</div>
     ${cta(T("Comment", "Komentē"), T("ADS", "META"), T("for all 7 rules", "un saņem 7 noteikumus"),
       T("Free, sent by DM. Screens are illustrative.", "Bez maksas, privātā ziņā. Attēli ir ilustratīvi."))}`;

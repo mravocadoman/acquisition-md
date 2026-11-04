@@ -25,8 +25,11 @@ function mark(name, color = BRAND[name] || "#002138") {
   return `<svg viewBox="${vb}" aria-hidden="true"><path fill="${color}" d="${d}"/></svg>`;
 }
 
-// Author chip, logo chips and the comment bar: the same on every cover.
+// Author chip, logo chips and the comment bar: the same on every cover. The Latvian versions go out from the
+// Mārketinga Skola pages, which speak as "mēs" (Rihards, 4 Nov), so their chip is the agency, not Rihards.
 const header = (logos, role) => `<div class="top">
-  <div class="author"><img src="img/rihards.jpg" alt=""><div><b>Rihards Zeila</b><span>${role}</span></div></div>
+  <div class="author">${LANG === "lv"
+    ? `<img src="img/ms.png" alt=""><div><b>Mārketinga Skola</b><span>Meta reklāmas un AI</span></div>`
+    : `<img src="img/rihards.jpg" alt=""><div><b>Rihards Zeila</b><span>${role}</span></div>`}</div>
   <div class="logos">${logos.map((l) => `<span class="logo">${mark(l)}</span>`).join("")}</div></div>`;
 const cta = (before, key, after, fine) => `<div class="cta">${before} <span class="key">${key}</span> ${after}</div><p class="fine">${fine}</p>`;
