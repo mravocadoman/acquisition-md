@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import deck2
 from deck2 import Deck, contact_sheet, art_tiles, art_bars2, art_code_to_slide, art_circles2, L, W
 import brand_icons  # official marks on the tool chips where a brand publishes one
-from art_extra import art_two_empty
+from art_extra import art_two_empty, cover_title_first
 import matplotlib.pyplot as plt
 # Same font set-up as build2.py: Arial measured and embedded (macOS Helvetica.ttc has no bold for matplotlib,
 # core Helvetica has no euro width). Arial also carries every Latvian letter.
@@ -77,34 +77,33 @@ class DeckLV(Deck):
 
 def done(d):
     pdf, n = d.save(); built.append((d.slug, n, pdf, max(d._words)))
+    # A deck that got shorter leaves its old last slides behind; drop them so the sheet and uploads match the PDF.
+    for f in os.listdir(os.path.join(OUT, d.slug)):
+        if f[:2].isdigit() and f.endswith(".png") and int(f[:2]) > n: os.remove(os.path.join(OUT, d.slug, f))
     contact_sheet(os.path.join(OUT, d.slug), os.path.join(OUT, d.slug + "-sheet.png"))
     print(f"{d.slug}: {n} slides, {os.path.getsize(pdf)//1024} KB, densest slide {max(d._words)} words")
 
 # ---------------------------------------------------------------- KOMANDA
 d = DeckLV("team-department-lv", OUT, "navy")
-d.cover("Manā mārketinga nodaļā ir **deviņi darbinieki**. Neviens nav cilvēks.", "Man jāieliek viens ķeksītis un jāvelta deviņdesmit sekundes dienā.",
-        art=lambda d, x, y, w, h: art_tiles(d, x, y, w, h, 9, 7, "strādā", "sargā"),
-        tools=["Claude", "n8n", "Notion", "LinkedIn"])
-d.flow("Es uzrakstu, pārējo izdara darbinieki", [
-    "Ierakstu apstiprinu ar vienu ķeksīti",
-    "Plkst. 8:00 ierakstu sadala četrās daļās",
-    "Slaidus zīmē no ieraksta skaitļiem",
-    "Plkst. 10:00 publicē LinkedIn un Facebook",
-    "Pēc 3 stundām publicē arī X un Threads"], kicker="kad ieraksts ir gatavs")
-d.grid("Deviņi darbinieki. Septiņi publicē. Divi sargā.", 9, 7, "dara darbu", "ceļ trauksmi, kad kaut kas salūzt", kicker="nodaļa", cols=3)
-d.statement("Darbinieki nedrīkst rakstīt ne vārda.", kicker="vienīgais noteikums",
-            sub="Katrs mašīnas uzrakstītais ieraksts bija pieņemams, bet uzreiz aizmirstams. Manā tekstā darbinieki nedrīkst mainīt nevienu burtu.")
-d.compare("Kas ir aizstāts un kas nav", "Aizstāts", ["Plānotājs", "Dizainers", "Publicētājs"],
-          "Nav aizstāts", ["Autors", "Gaume", "Sarunas ar Tevi"], kicker="godīgi sakot")
-d.stats([("90 s", "no manas dienas", "ielieku vienu ķeksīti, tad atbildu"),
-         ("4", "viena ieraksta daļas", "ieraksts, komentārs, slaidi, materiāls"),
-         ("<1", "frīlansera rēķins", "visas mēneša izmaksas")], kicker="skaitļos")
-d.bullets("Kur sistēma mēdz salūzt", [
-    "Reiz sistēma nemanāmi apstājās, tāpēc vispirms iestati trauksmi",
-    "Izmaiņas stājas spēkā tikai pēc publicēšanas",
-    "Bezmaksas datubāze aizmieg pēc nedēļas bez aktivitātes",
-    "Automatizācija nodrošina regularitāti, nevis sasniedzamību"], kicker="mācījos no savas pieredzes")
-d.gate("KOMANDA", "Vienkāršs skaidrojums par visām deviņām automatizācijām un par to, kur sistēma mēdz salūzt.")
+cover_title_first(d, "Manā mārketinga nodaļā strādā **deviņi darbinieki**, un neviens nav cilvēks.",
+                  "Šo ierakstu uzrakstīja Claude, apstiprināju es, publicēja viņi.",
+                  art=lambda d, x, y, w, h: art_tiles(d, x, y, w, h, 9, 7, "strādā", "sargā"),
+                  tools=["Claude", "n8n", "Notion", "LinkedIn"], swipe="velc  ›")
+d.flow("Claude raksta, es apstiprinu, darbinieki publicē", [
+    "Claude sagatavo ierakstu un slaidus",
+    "Es izlasu un apstiprinu",
+    "LinkedIn labākajā laikā",
+    "Kopija Facebook",
+    "Pēc trim stundām X un Threads"], kicker="no melnraksta līdz publikācijai")
+d.grid("Deviņi darbinieki: septiņi publicē, divi sargā.", 9, 7, "dara darbu", "pieskata pārējos septiņus", kicker="nodaļa", cols=3)
+d.statement("Bez mana ķeksīša neviens no deviņiem nekustas.", kicker="vienīgais noteikums",
+            sub="Pirmo melnrakstu uzraksta Claude, bet katru ierakstu es izlasu, pirms to apstiprinu.")
+d.compare("Kas ir aizstāts un kas nav", "Aizstāts", ["Pirmais melnraksts", "Dizainers", "Plānotājs"],
+          "Nav aizstāts", ["Pēdējais vārds", "Gaume", "Sarunas ar Tevi"], kicker="godīgi sakot")
+d.stats([("1", "ķeksītis pie katra ieraksta", "kad esmu to izlasījis"),
+         ("4", "daļas katram ierakstam", "teksts, komentārs, slaidi, materiāls"),
+         ("<1", "frīlancera rēķins", "visas mēneša izmaksas")], kicker="skaitļos")
+d.gate("KOMANDA", "Vienkāršs skaidrojums par visām deviņām automatizācijām un par to, kā līdzīgu sistēmu izveidot nedēļas nogalē.")
 done(d)
 
 # ---------------------------------------------------------------- KARUSELIS
@@ -116,7 +115,7 @@ d.stats([("3x", "lielāka iesaiste", "slaidiem salīdzinājumā ar teksta ieraks
 d.compare("Agrāk un tagad", "Agrāk", ["Stunda Canvā katram ierakstam", "Katru nedēļu cits izskats", "Grafiki uz aci"],
           "Tagad", ["Sekundes vienam karuselim", "Vienmēr vienots izskats", "Stabiņi no īstiem skaitļiem"], kicker="kas mainījās")
 d.flow("Kā top karuselis", [
-    "Vispirms uzrakstu ierakstu",
+    "Vispirms ir apstiprināts ieraksts",
     "Ieraksta skaitļi nonāk slaidos",
     "Skripts uzzīmē 7-8 slaidus",
     "Par daudz teksta? Slaida nav",

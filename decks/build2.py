@@ -8,6 +8,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deck2 import Deck, contact_sheet, art_tiles, art_toggle, art_bars2, art_code_to_slide, art_clock, art_circles2, art_gauge
 import brand_icons  # official marks on the tool chips where a brand publishes one; generic pictograms otherwise
+from art_extra import cover_title_first
 import matplotlib.pyplot as plt
 # 2 Nov 2026, built on a Mac without TeX Gyre Heros: matplotlib reads only the regular face of macOS Helvetica.ttc,
 # so bold text was measured too narrow. Arial has Helvetica's metrics and a real bold.
@@ -22,33 +23,32 @@ built = []
 
 def done(d):
     pdf, n = d.save(); built.append((d.slug, n, pdf, max(d._words)))
+    # A deck that got shorter leaves its old last slides behind; drop them so the sheet and uploads match the PDF.
+    for f in os.listdir(os.path.join(OUT, d.slug)):
+        if f[:2].isdigit() and f.endswith(".png") and int(f[:2]) > n: os.remove(os.path.join(OUT, d.slug, f))
     contact_sheet(os.path.join(OUT, d.slug), os.path.join(OUT, d.slug + "-sheet.png"))
     print(f"{d.slug}: {n} slides, {os.path.getsize(pdf)//1024} KB, theme {d.theme}, densest slide {max(d._words)} words")
 
 # ---------------------------------------------------------------- 1. TEAM (navy)
 d = Deck("team-department", OUT, "navy")
-d.cover("My marketing department has **nine workers**. None of them is human.", "One tick from me, ninety seconds a day. They published this post.",
-        art=lambda d, x, y, w, h: art_tiles(d, x, y, w, h, 9, 7, "work", "guard"),
-        tools=["Claude", "n8n", "Notion", "LinkedIn"])
-d.flow("I write it. They do the rest", [
-    "One tick approves it",
-    "08:00: split into four pieces",
-    "Slides drawn from its numbers",
-    "Live at 10:00, Facebook too",
-    "X and Threads three hours later"], kicker="after I write")
-d.grid("Nine workers. Seven publish. Two keep watch.", 9, 7, "do the work", "raise the alarm when it breaks", kicker="the department", cols=3)
-d.statement("They are banned from writing a single word.", kicker="the one rule",
-            sub="Every post a machine wrote was fine and instantly forgettable. If I wrote it, they cannot change a letter.")
-d.compare("Replaced. Not replaced.", "Replaced", ["The scheduler", "The designer", "The ops person"],
-          "Not replaced", ["The writer", "Taste", "Talking to you"], kicker="the honest part")
-d.stats([("90s", "of my day", "one tick, then I reply"),
-         ("4", "pieces per post", "post, comment, slides, guide"),
+cover_title_first(d, "My marketing department has **nine workers**. None of them is human.",
+                  "Claude drafted this post. I approved it. They published it.",
+                  art=lambda d, x, y, w, h: art_tiles(d, x, y, w, h, 9, 7, "work", "guard"),
+                  tools=["Claude", "n8n", "Notion", "LinkedIn"])
+d.flow("Claude drafts. I approve. They publish", [
+    "Claude drafts it",
+    "I read and tick it",
+    "LinkedIn, best hour",
+    "Facebook copy",
+    "X and Threads, 3 hours later"], kicker="draft to feed")
+d.grid("Nine workers. Seven publish. Two keep watch.", 9, 7, "do the work", "watch the other seven", kicker="the department", cols=3)
+d.statement("Without my tick, none of the nine moves.", kicker="the one rule",
+            sub="Claude writes the first draft. I read every post before I approve it.")
+d.compare("Replaced. Not replaced.", "Replaced", ["The first draft", "The designer", "The scheduler"],
+          "Not replaced", ["The final say", "Taste", "Talking to you"], kicker="the honest part")
+d.stats([("1", "tick per post", "once I have read it"),
+         ("4", "pieces per post", "text, comment, slides, guide"),
          ("<1", "freelance invoice", "the whole monthly cost")], kicker="in numbers")
-d.bullets("Where it breaks", [
-    "It once stopped silently. Build the alarm first",
-    "Changes do nothing until you press publish",
-    "The free database sleeps after a quiet week",
-    "It buys punctuality, not reach"], kicker="learned the hard way")
 d.gate("TEAM", "All nine workers explained, and a simple version to build in a weekend.",
        U, extra="Sent by hand.")
 done(d)
@@ -111,7 +111,7 @@ d.stats([("3x", "the engagement", "slides vs text posts, Sep 2026"),
 d.compare("Before. Now.", "Before", ["An hour in Canva per post", "A new look every week", "Charts by eye"],
           "Now", ["Seconds per deck", "One look, forever", "Bars from real numbers"], kicker="what changed")
 d.flow("How it works", [
-    "I write the post first",
+    "The approved post comes first",
     "Its numbers go on the slides",
     "A script draws 7 to 8 slides",
     "Too crowded? No slide",
